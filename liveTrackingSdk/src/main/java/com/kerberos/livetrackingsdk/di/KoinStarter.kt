@@ -1,9 +1,12 @@
 package com.kerberos.livetrackingsdk.di
 
 import android.app.Application
+import com.aljawad.sons.gorestrepository.repositories.TripPagingRepository
 import com.kerberos.livetrackingsdk.orm.LiveTrackingDatabase
+import com.kerberos.livetrackingsdk.repositories.repositories.TripPagingRepositoryImpl
 import com.kerberos.livetrackingsdk.repositories.repositories.TripTrackRepository
 import com.kerberos.livetrackingsdk.viewModels.TripTrackViewModel
+import com.kerberos.livetrackingsdk.viewModels.TripViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -28,14 +31,17 @@ object KoinStarter {
 
     private val viewModelModule = module {
         viewModel { TripTrackViewModel(get()) }
+        viewModel { TripViewModel(get()) }
     }
 
     private val repositoryModule = module {
         single { TripTrackRepository(get()) }
+        single<TripPagingRepository> { TripPagingRepositoryImpl(get()) }
     }
 
     private val databaseModule = module {
         single { LiveTrackingDatabase.getDatabase(get()).tripTrackDao() }
+        single { LiveTrackingDatabase.getDatabase(get()).tripDao() }
     }
 
 }

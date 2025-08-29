@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.2.0-beta01")
     implementation(project(":liveTrackingSdk"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

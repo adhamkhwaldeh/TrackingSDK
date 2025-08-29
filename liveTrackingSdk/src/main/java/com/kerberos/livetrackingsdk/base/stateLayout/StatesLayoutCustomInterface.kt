@@ -1,4 +1,4 @@
-package com.kerberos.trackingSdk.base.stateLayout
+package com.kerberos.livetrackingsdk.base.stateLayout
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.UiComposable

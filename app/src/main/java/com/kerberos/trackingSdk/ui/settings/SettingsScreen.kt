@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.ui.settings
+package com.kerberos.trackingSdk.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kerberos.livetrackingsdk.ui.settings.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

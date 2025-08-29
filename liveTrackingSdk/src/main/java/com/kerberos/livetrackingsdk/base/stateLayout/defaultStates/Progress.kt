@@ -1,4 +1,4 @@
-package com.kerberos.trackingSdk.base.stateLayout.defaultStates
+package com.kerberos.livetrackingsdk.base.stateLayout.defaultStates
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

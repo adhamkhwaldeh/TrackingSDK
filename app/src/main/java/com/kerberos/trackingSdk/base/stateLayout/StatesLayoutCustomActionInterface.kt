@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.base.stateLayout
+package com.kerberos.trackingSdk.base.stateLayout
 
 /**
  * States layout custom action interface

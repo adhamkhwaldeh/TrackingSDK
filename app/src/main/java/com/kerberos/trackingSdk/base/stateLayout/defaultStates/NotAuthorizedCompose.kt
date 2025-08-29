@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.base.stateLayout.defaultStates
+package com.kerberos.trackingSdk.base.stateLayout.defaultStates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

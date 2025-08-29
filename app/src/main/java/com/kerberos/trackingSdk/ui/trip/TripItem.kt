@@ -35,7 +35,7 @@ fun TripItem(trip: TripModel) {
             if (trip.endTime != null) {
                 Row {
                     Text(text = "End Time: ", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = trip.endTime.toFormattedDate(), style = MaterialTheme.typography.bodyMedium)
+                    Text(text = trip.endTime!!.toFormattedDate(), style = MaterialTheme.typography.bodyMedium)
                 }
             }
             if (trip.tripDuration != null) {

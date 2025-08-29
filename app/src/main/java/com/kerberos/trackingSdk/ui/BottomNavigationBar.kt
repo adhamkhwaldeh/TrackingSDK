@@ -3,6 +3,7 @@ package com.kerberos.trackingSdk.ui
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,8 +18,8 @@ import androidx.navigation.NavController
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("List", "Map")
-    val icons = listOf(Icons.Filled.List, Icons.Filled.Map)
+    val items = listOf("List", "Map", "Settings")
+    val icons = listOf(Icons.Filled.List, Icons.Filled.Map, Icons.Filled.Settings)
 
     NavigationBar {
         items.forEachIndexed { index, item ->

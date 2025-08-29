@@ -1,8 +1,14 @@
 package com.kerberos.trackingSdk.ui.trip
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -22,42 +29,138 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
     val lazyTripItems = viewModel.getTripList().collectAsLazyPagingItems()
+    val context = LocalContext.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    val importCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                viewModel.importTripsCsv(uri)
+            }
+        }
+    }
+
+    val exportCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                viewModel.exportTripsCsv(uri)
+            }
+        }
+    }
+
+    val importJsonLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                viewModel.importTripsJson(uri)
+            }
+        }
+    }
+
+    val exportJsonLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                viewModel.exportTripsJson(uri)
+            }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            items(lazyTripItems.itemCount) { index ->
-                lazyTripItems[index]?.let { trip ->
-                    TripItem(trip = trip)
+            Button(onClick = {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/csv"
                 }
+                importCsvLauncher.launch(intent)
+            }) {
+                Text(text = "Import CSV")
+            }
+            Button(onClick = {
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/csv"
+                    putExtra(Intent.EXTRA_TITLE, "trips.csv")
+                }
+                exportCsvLauncher.launch(intent)
+            }) {
+                Text(text = "Export CSV")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                }
+                importJsonLauncher.launch(intent)
+            }) {
+                Text(text = "Import JSON")
+            }
+            Button(onClick = {
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "trips.json")
+                }
+                exportJsonLauncher.launch(intent)
+            }) {
+                Text(text = "Export JSON")
             }
         }
 
-        lazyTripItems.loadState.let { loadState ->
-            if (loadState.refresh is LoadState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-            if (loadState.refresh is LoadState.Error) {
-                val error = (loadState.refresh as LoadState.Error).error
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Error: ${error.message}")
-                    Button(onClick = { lazyTripItems.retry() }) {
-                        Text(text = "Retry")
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(lazyTripItems.itemCount) { index ->
+                    lazyTripItems[index]?.let { trip ->
+                        TripItem(trip = trip)
                     }
                 }
             }
-            if (loadState.append.endOfPaginationReached && lazyTripItems.itemCount == 0) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "No trips found.")
+
+            lazyTripItems.loadState.let { loadState ->
+                if (loadState.refresh is LoadState.Loading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                if (loadState.refresh is LoadState.Error) {
+                    val error = (loadState.refresh as LoadState.Error).error
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Error: ${error.message}")
+                        Button(onClick = { lazyTripItems.retry() }) {
+                            Text(text = "Retry")
+                        }
+                    }
+                }
+                if (loadState.append.endOfPaginationReached && lazyTripItems.itemCount == 0) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "No trips found.")
+                    }
                 }
             }
         }

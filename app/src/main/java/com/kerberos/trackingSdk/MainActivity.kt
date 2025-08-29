@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.kerberos.trackingSdk.ui.theme.ui.theme.MyApplicationTheme
-import com.kerberos.trackingSdk.ui.trip.TripScreen
+import com.kerberos.trackingSdk.ui.trip.TripMapScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TripScreen()
+                    TripMapScreen()
                 }
             }
         }

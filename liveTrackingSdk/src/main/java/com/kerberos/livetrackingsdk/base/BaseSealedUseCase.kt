@@ -1,6 +1,6 @@
 package com.kerberos.livetrackingsdk.base
 
-import com.kerberos.livetrackingsdk.base.states.BaseState
+import com.adham.gini.weatherginisdk.base.states.BaseState
 import kotlinx.coroutines.*
 
 /**

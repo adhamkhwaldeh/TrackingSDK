@@ -57,6 +57,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.gson)
+    implementation("com.opencsv:opencsv:5.12.0")
 
     implementation("androidx.datastore:datastore:1.1.7")
     implementation("androidx.datastore:datastore-preferences:1.1.7")

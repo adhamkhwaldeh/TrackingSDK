@@ -5,6 +5,12 @@ import com.aljawad.sons.gorestrepository.repositories.TripPagingRepository
 import com.kerberos.livetrackingsdk.orm.LiveTrackingDatabase
 import com.kerberos.livetrackingsdk.repositories.repositories.TripPagingRepositoryImpl
 import com.kerberos.livetrackingsdk.repositories.repositories.TripTrackRepository
+import com.aljawad.sons.gorestrepository.repositories.TripPagingRepository
+import com.kerberos.livetrackingsdk.dataStore.AppPrefsStorage
+import com.kerberos.livetrackingsdk.orm.LiveTrackingDatabase
+import com.kerberos.livetrackingsdk.repositories.repositories.TripPagingRepositoryImpl
+import com.kerberos.livetrackingsdk.repositories.repositories.TripTrackRepository
+import com.kerberos.livetrackingsdk.ui.settings.SettingsViewModel
 import com.kerberos.livetrackingsdk.viewModels.TripTrackViewModel
 import com.kerberos.livetrackingsdk.viewModels.TripViewModel
 import org.koin.android.ext.koin.androidContext
@@ -23,7 +29,8 @@ object KoinStarter {
                 listOf(
                     databaseModule,
                     repositoryModule,
-                    viewModelModule
+                    viewModelModule,
+                    storageModule
                 )
             )
         }
@@ -32,6 +39,7 @@ object KoinStarter {
     private val viewModelModule = module {
         viewModel { TripTrackViewModel(get()) }
         viewModel { TripViewModel(get()) }
+        viewModel { SettingsViewModel(get()) }
     }
 
     private val repositoryModule = module {
@@ -42,6 +50,10 @@ object KoinStarter {
     private val databaseModule = module {
         single { LiveTrackingDatabase.getDatabase(get()).tripTrackDao() }
         single { LiveTrackingDatabase.getDatabase(get()).tripDao() }
+    }
+
+    private val storageModule = module {
+        single { AppPrefsStorage(get()) }
     }
 
 }

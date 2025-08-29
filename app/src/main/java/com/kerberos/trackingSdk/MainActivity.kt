@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kerberos.livetrackingsdk.ui.settings.SettingsScreen
 import com.kerberos.trackingSdk.ui.BottomNavigationBar
 import com.kerberos.trackingSdk.ui.theme.ui.theme.MyApplicationTheme
 import com.kerberos.trackingSdk.ui.trip.TripMapScreen
@@ -41,6 +42,7 @@ fun MainScreen() {
         ) {
             composable("List") { TripScreen() }
             composable("Map") { TripMapScreen() }
+            composable("Settings") { SettingsScreen() }
         }
     }
 }

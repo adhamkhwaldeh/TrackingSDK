@@ -9,8 +9,8 @@ To publish the `liveTrackingSdk` library to the Sonatype OSSRH (Maven Central), 
 Create a `local.properties` file in the root directory of the project if it doesn't exist, and add the following lines:
 
 ```
-sonatypeUsername=<your-sonatype-username>
-sonatypePassword=<your-sonatype-password>
+sonatypeUsername=AdhamAlkhawalda
+sonatypePassword=Ab123456789$
 ```
 
 Replace `<your-sonatype-username>` and `<your-sonatype-password>` with your actual Sonatype username and password.

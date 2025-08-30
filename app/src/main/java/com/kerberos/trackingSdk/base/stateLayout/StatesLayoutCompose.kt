@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.base.stateLayout
+package com.kerberos.trackingSdk.base.stateLayout
 
 
 import android.widget.Toast
@@ -9,11 +9,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalContext
-import com.adham.gini.weatherginisdk.base.stateLayout.defaultStates.InternalServerErrorCompose
-import com.adham.gini.weatherginisdk.base.states.BaseState
-import com.adham.gini.weatherginisdk.base.stateLayout.defaultStates.NoInternetConnectionCompose
-import com.adham.gini.weatherginisdk.base.stateLayout.defaultStates.NotAuthorizedCompose
-import com.adham.gini.weatherginisdk.base.stateLayout.defaultStates.Progress
+import com.kerberos.livetrackingsdk.base.states.BaseState
+import com.kerberos.trackingSdk.base.stateLayout.defaultStates.InternalServerErrorCompose
+import com.kerberos.trackingSdk.base.stateLayout.defaultStates.NoInternetConnectionCompose
+import com.kerberos.trackingSdk.base.stateLayout.defaultStates.NotAuthorizedCompose
+import com.kerberos.trackingSdk.base.stateLayout.defaultStates.Progress
+
 
 /**
  * States layout compose

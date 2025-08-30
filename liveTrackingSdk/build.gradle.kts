@@ -64,8 +64,8 @@ publishing {
         maven {
             url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = project.property("sonatypeUsername") as String?
-                password = project.property("sonatypePassword") as String?
+                username = project.findProperty("sonatypeUsername") as String?
+                password = project.findProperty("sonatypePassword") as String?
             }
         }
     }
@@ -97,5 +97,12 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
+    // ... existing dependencies ...
+    implementation("io.insert-koin:koin-android:3.5.3")
+    implementation("io.insert-koin:koin-core:3.5.3")
+    // ... existing dependencies ...
+    implementation("io.insert-koin:koin-annotations:1.3.0")
+    kapt("io.insert-koin:koin-ksp-compiler:1.3.0")
 
 }
+

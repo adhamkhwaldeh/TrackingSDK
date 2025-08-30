@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.base.stateLayout.defaultStates
+package com.kerberos.trackingSdk.base.stateLayout.defaultStates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.adham.gini.weatherginisdk.R
+import com.kerberos.trackingSdk.R
 
 
 /**
@@ -18,7 +18,7 @@ import com.adham.gini.weatherginisdk.R
  *
  */
 @Composable
-fun NotAuthorizedCompose() {
+fun InternalServerErrorCompose(message: String?) {
 
     Column(
         modifier = Modifier
@@ -28,8 +28,10 @@ fun NotAuthorizedCompose() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.youAreNotAuthorized),
+            text = message ?: stringResource(R.string.internalServerError),
             style = MaterialTheme.typography.labelLarge
         )
     }
 }
+
+

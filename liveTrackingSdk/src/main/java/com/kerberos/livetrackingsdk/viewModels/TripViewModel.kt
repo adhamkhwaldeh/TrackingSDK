@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.aljawad.sons.gorestrepository.repositories.TripPagingRepository
 import com.kerberos.livetrackingsdk.factories.TripUseCaseFactory
+import com.kerberos.livetrackingsdk.mappers.toTrip
 import com.kerberos.livetrackingsdk.models.TripModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -56,6 +57,20 @@ class TripViewModel constructor(
             context.contentResolver.openOutputStream(uri)?.let {
                 useCase.execute(it)
             }
+        }
+    }
+
+    fun updateTrip(tripModel: TripModel) {
+        viewModelScope.launch {
+            val useCase = tripUseCaseFactory.createUpdateUseCase()
+            useCase.execute(tripModel.toTrip())
+        }
+    }
+
+    fun deleteTrip(tripModel: TripModel) {
+        viewModelScope.launch {
+            val useCase = tripUseCaseFactory.createDeleteUseCase()
+            useCase.execute(tripModel.toTrip())
         }
     }
 

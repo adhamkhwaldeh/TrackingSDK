@@ -1,11 +1,14 @@
 package com.kerberos.livetrackingsdk.factories
 
 import com.google.gson.Gson
+import com.google.gson.Gson
 import com.kerberos.livetrackingsdk.importer.CsvTripImporterExporter
 import com.kerberos.livetrackingsdk.importer.JsonTripImporterExporter
 import com.kerberos.livetrackingsdk.repositories.repositories.TripRepository
+import com.kerberos.livetrackingsdk.useCases.DeleteTripUseCase
 import com.kerberos.livetrackingsdk.useCases.ExportTripsUseCase
 import com.kerberos.livetrackingsdk.useCases.ImportTripsUseCase
+import com.kerberos.livetrackingsdk.useCases.UpdateTripUseCase
 
 class TripUseCaseFactory(private val tripRepository: TripRepository, private val gson: Gson) {
 
@@ -25,5 +28,13 @@ class TripUseCaseFactory(private val tripRepository: TripRepository, private val
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
         return ExportTripsUseCase(tripRepository, exporter)
+    }
+
+    fun createUpdateUseCase(): UpdateTripUseCase {
+        return UpdateTripUseCase(tripRepository)
+    }
+
+    fun createDeleteUseCase(): DeleteTripUseCase {
+        return DeleteTripUseCase(tripRepository)
     }
 }

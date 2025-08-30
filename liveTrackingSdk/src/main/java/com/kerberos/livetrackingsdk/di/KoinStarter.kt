@@ -3,11 +3,13 @@ package com.kerberos.livetrackingsdk.di
 import android.app.Application
 import com.aljawad.sons.gorestrepository.repositories.TripPagingRepository
 import com.google.gson.Gson
+import com.kerberos.livetrackingsdk.dataStore.AppPrefsStorage
 import com.kerberos.livetrackingsdk.factories.TripUseCaseFactory
 import com.kerberos.livetrackingsdk.orm.LiveTrackingDatabase
 import com.kerberos.livetrackingsdk.repositories.repositories.TripPagingRepositoryImpl
 import com.kerberos.livetrackingsdk.repositories.repositories.TripRepository
 import com.kerberos.livetrackingsdk.repositories.repositories.TripTrackRepository
+import com.kerberos.livetrackingsdk.viewModels.SettingsViewModel
 import com.kerberos.livetrackingsdk.viewModels.TripTrackViewModel
 import com.kerberos.livetrackingsdk.viewModels.TripViewModel
 import org.koin.android.ext.koin.androidContext
@@ -28,7 +30,8 @@ object KoinStarter {
                     repositoryModule,
                     viewModelModule,
                     factoryModule,
-                    serializationModule
+                    serializationModule,
+                    storageModule
                 )
             )
         }
@@ -37,6 +40,7 @@ object KoinStarter {
     private val viewModelModule = module {
         viewModel { TripTrackViewModel(get()) }
         viewModel { TripViewModel(get(), get(), get()) }
+        viewModel { SettingsViewModel(get()) }
     }
 
     private val repositoryModule = module {
@@ -56,6 +60,9 @@ object KoinStarter {
 
     private val serializationModule = module {
         single { Gson() }
+    }
+    private val storageModule = module {
+        single { AppPrefsStorage(get()) }
     }
 
 }

@@ -15,6 +15,7 @@ import com.kerberos.trackingSdk.ui.BottomNavigationBar
 import com.kerberos.trackingSdk.ui.theme.ui.theme.MyApplicationTheme
 import com.kerberos.trackingSdk.ui.trip.TripMapScreen
 import com.kerberos.trackingSdk.ui.trip.TripScreen
+import com.kerberos.trackingSdk.ui.settings.SettingsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,7 @@ fun MainScreen() {
         ) {
             composable("List") { TripScreen() }
             composable("Map") { TripMapScreen() }
+            composable("Settings") { SettingsScreen() }
         }
     }
 }

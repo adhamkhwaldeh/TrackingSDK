@@ -55,17 +55,27 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.2.0-beta01")
-    implementation(project(":liveTrackingSdk"))
+    implementation(libs.androidx.adaptive.navigation)
+    implementation(libs.androidx.navigation.runtime.android)
+    implementation(libs.androidx.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("com.google.maps.android:maps-compose:2.11.4")
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
+    implementation(libs.koin.androidx.compose)
+
+    implementation(project(":liveTrackingSdk"))
+
 }
+

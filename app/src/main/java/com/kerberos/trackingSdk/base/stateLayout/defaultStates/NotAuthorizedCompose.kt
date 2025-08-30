@@ -1,50 +1,35 @@
-package com.kerberos.livetrackingsdk.base.stateLayout.defaultStates
+package com.kerberos.trackingSdk.base.stateLayout.defaultStates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.adham.gini.weatherginisdk.R
-import com.adham.gini.weatherginisdk.ui.navigations.NavigationItem
+import com.kerberos.trackingSdk.R
 
 
 /**
- * No internet connection compose
+ * Not authorized compose
  *
- * @param retry
- * @receiver
  */
 @Composable
-fun NoInternetConnectionCompose(retry: () -> Unit) {
+fun NotAuthorizedCompose() {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-//            .fillMaxHeight()
-        ,
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.noConnection),
+            text = stringResource(R.string.youAreNotAuthorized),
             style = MaterialTheme.typography.labelLarge
         )
-        OutlinedButton(
-            modifier = Modifier.padding(8.dp),
-            onClick = {
-                retry()
-            },
-        ) {
-            Text(text = stringResource(R.string.Retry))
-        }
     }
 }

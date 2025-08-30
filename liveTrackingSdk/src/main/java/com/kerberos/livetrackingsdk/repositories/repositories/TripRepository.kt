@@ -18,4 +18,12 @@ class TripRepository constructor(
         tripDao.insert(trips)
     }
 
+    suspend fun updateTrip(trip: Trip) {
+        tripDao.update(trip)
+    }
+
+    suspend fun deleteTrip(trip: Trip) {
+        tripDao.delete(trip)
+    }
+
 }

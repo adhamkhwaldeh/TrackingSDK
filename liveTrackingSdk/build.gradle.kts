@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("maven-publish")
     // ... existing plugins ...
     id("kotlin-kapt")
 }
@@ -47,6 +48,29 @@ android {
 
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = "io.github.adhamkhwaldeh"
+            artifactId = "livetrackingsdk"
+            version = "1.0.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = project.findProperty("sonatypeUsername") as String?
+                password = project.findProperty("sonatypePassword") as String?
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -73,13 +97,12 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
-    // Koin for Android
+    // ... existing dependencies ...
     implementation("io.insert-koin:koin-android:3.5.3")
-    implementation("io.insert-koin:koin-androidx-viewmodel:3.5.3")
     implementation("io.insert-koin:koin-core:3.5.3")
-    // Optionally, for Koin annotations (if you use them):
-    // implementation("io.insert-koin:koin-annotations:1.3.0")
-    // kapt("io.insert-koin:koin-ksp-compiler:1.3.0")
+    // ... existing dependencies ...
+    implementation("io.insert-koin:koin-annotations:1.3.0")
+    kapt("io.insert-koin:koin-ksp-compiler:1.3.0")
 
 }
 

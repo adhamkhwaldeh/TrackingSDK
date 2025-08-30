@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Application"
+rootProject.name = "Tracking Application"
 include(":app")
 include(":liveTrackingSdk")

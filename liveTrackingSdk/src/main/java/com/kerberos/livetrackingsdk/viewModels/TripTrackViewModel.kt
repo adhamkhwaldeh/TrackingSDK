@@ -9,20 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-enum class TripStatus {
-    STOPPED,
-    RUNNING,
-    PAUSED
-}
-
 class TripTrackViewModel constructor(private val tripTrackRepository: TripTrackRepository) :
     ViewModel() {
 
     private val _tripTracks = MutableStateFlow<List<TripTrack>>(emptyList())
     val tripTracks: StateFlow<List<TripTrack>> = _tripTracks
-
-    private val _tripStatus = MutableStateFlow(TripStatus.STOPPED)
-    val tripStatus: StateFlow<TripStatus> = _tripStatus
 
     fun getTripTracks(tripId: Int) {
         viewModelScope.launch {
@@ -30,21 +21,5 @@ class TripTrackViewModel constructor(private val tripTrackRepository: TripTrackR
                 _tripTracks.value = it
             }
         }
-    }
-
-    fun startTrip() {
-        _tripStatus.value = TripStatus.RUNNING
-    }
-
-    fun pauseTrip() {
-        _tripStatus.value = TripStatus.PAUSED
-    }
-
-    fun resumeTrip() {
-        _tripStatus.value = TripStatus.RUNNING
-    }
-
-    fun stopTrip() {
-        _tripStatus.value = TripStatus.STOPPED
     }
 }

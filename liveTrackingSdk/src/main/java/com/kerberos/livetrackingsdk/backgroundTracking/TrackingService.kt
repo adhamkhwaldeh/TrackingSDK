@@ -24,11 +24,18 @@ import com.google.gson.Gson
 import com.kerberos.livetrackingsdk.ITrackingService
 import com.kerberos.livetrackingsdk.R
 import com.kerberos.livetrackingsdk.useCases.AddCurrentTripTrackUseCase
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
+//import com.tatweer.common.extensions.requestBlocking
+//import com.tatweer.unifiedinspection.HomeActivity
+//import com.tatweer.unifiedinspection.data.source.remote.RetrofitCoreBuilder
+//import com.tatweer.unifiedinspection.dtos.data.area.models.InspectorTrackingRequest
+//import com.tatweer.unifiedinspection.dtos.data.area.models.LocationPointData
+//import com.tatweer.unifiedinspection.dtos.helpers.ConstantHelper
+//import com.tatweer.unifiedinspection.dtos.helpers.ConstantHelper.DEVICE_STATUS_ACTION
+//import com.tatweer.unifiedinspection.dtos.helpers.ConstantHelper.INSPECTOR_LAST_UPDATE_DATE_KEY
+//import com.tatweer.unifiedinspection.dtos.helpers.ConstantHelper.INSPECTOR_STATUS_KEY
+//import com.tatweer.unifiedinspection.dtos.helpers.ConstantHelper.TRACKING_STATUS_ACTION
+//import com.tatweer.unifiedinspection.features.inspectorTracking.InspectionTrackingApiService
+//import com.tatweer.unifiedinspection.utils.NetworkConnectionDetector
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -49,12 +56,6 @@ class TrackingService : Service() {
     private var isGpsEnabled = true
     private var isNetworkEnabled = true
     private var isNetworkEnabledForLiveTracking = true
-
-    // --- Periodic Location Updates Members ---
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-    private var locationRequest: LocationRequest? = null
-    // --- End Periodic Location Updates Members ---
 
     //    private val addCurrentTripTrackUseCase: AddCurrentTripTrackUseCase by inject()
 //
@@ -176,11 +177,6 @@ class TrackingService : Service() {
                 }
             }
 
-        // --- Setup periodic location updates ---
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        setupLocationUpdates()
-        // --- End setup ---
-
         startTrackingService()
     }
 
@@ -193,10 +189,12 @@ class TrackingService : Service() {
     private fun startTrackingService() {
         //TODO first point
         Timber.d("Starting the foreground service task")
-        // --- Start periodic location updates ---
-        startLocationUpdates()
-        // --- End start ---
+//        Toast.makeText(this, this.getString(R.string.follow_up_inspector_msg), Toast.LENGTH_SHORT)
+//            .show()
+
         handleGeneralTracking()
+
+
         handleGpsAndNetworkConnection()
     }
 
@@ -527,36 +525,5 @@ class TrackingService : Service() {
 //            restartServicePendingIntent
 //        )
     }
-
-    // --- Periodic Location Updates Methods ---
-    private fun setupLocationUpdates() {
-        locationRequest = LocationRequest.Builder(5000L)
-//            .setMinUpdateDistanceMeters()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .build()
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { onLocationFetchedProperly(it) }
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-        locationRequest?.let {
-            fusedLocationClient.requestLocationUpdates(
-                it,
-                locationCallback,
-                null
-            )
-        }
-    }
-
-    private fun stopLocationUpdates() {
-        if (::fusedLocationClient.isInitialized && ::locationCallback.isInitialized) {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-        }
-    }
-    // --- End Periodic Location Updates Methods ---
 
 }

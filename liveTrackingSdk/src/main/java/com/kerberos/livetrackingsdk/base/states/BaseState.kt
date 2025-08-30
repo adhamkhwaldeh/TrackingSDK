@@ -114,8 +114,6 @@ sealed class BaseState<out T> {
             errorMessage: String? = null
         ): BaseState<T> {
             return when (it) {
-
-                //TODO need to be checked
 //                is retrofit2.HttpException -> {
 //                    if (it.code() == 403) {
 //                        NoAuthorized(it.message())

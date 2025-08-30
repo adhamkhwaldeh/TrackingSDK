@@ -2,9 +2,7 @@ package com.kerberos.trackingSdk.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,12 +17,13 @@ import androidx.navigation.NavController
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("List", "Map", "Settings")
-    val icons = listOf(Icons.AutoMirrored.Filled.List, Icons.Filled.Place, Icons.Filled.Settings)
+    val items = listOf("List", "Map")
+    val icons = listOf(Icons.AutoMirrored.Filled.List, Icons.Filled.Place)
 
     NavigationBar {
         items.forEachIndexed { index, item ->
-            NavigationBarItem(icon = { Icon(icons[index], contentDescription = item) },
+            NavigationBarItem(
+                icon = { Icon(icons[index], contentDescription = item) },
                 label = { Text(item) },
                 selected = selectedItem == index,
                 onClick = {
@@ -42,7 +41,8 @@ fun BottomNavigationBar(navController: NavController) {
                         // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
-                })
+                }
+            )
         }
     }
 }

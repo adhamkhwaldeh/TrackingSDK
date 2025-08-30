@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Tracking Application</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="noConnection">"Apparently you have connectivity issue \\n Could you press retry to load the data?"</string>
+    <string name="Retry">Retry</string>
+    <string name="youAreNotAuthorized">You are not authorized</string>
+    <string name="internalServerError">Internal server error</string>
 </resources>

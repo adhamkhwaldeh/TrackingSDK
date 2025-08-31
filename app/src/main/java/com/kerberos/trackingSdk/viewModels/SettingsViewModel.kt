@@ -25,7 +25,8 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
             val config = appPrefsStorage.trackSDKConfiguration.first()
             _uiState.value = SettingsUiState(
                 locationUpdateInterval = config?.locationUpdateInterval?.toString() ?: "10000",
-                backgroundTrackingEnabled = config?.backgroundTrackingToggle ?: false
+                backgroundTrackingEnabled = config?.backgroundTrackingToggle ?: false,
+                minDistance = config?.minDistanceMeters?.toString() ?: "25"
             )
         }
     }
@@ -38,13 +39,17 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
         _uiState.value = _uiState.value.copy(backgroundTrackingEnabled = enabled)
     }
 
+    fun onMinDistanceChanged(distance: String) {
+        _uiState.value = _uiState.value.copy(minDistance = distance)
+    }
+
     fun saveSettings() {
         viewModelScope.launch {
             val currentConfig = SdkSettings(
                 locationUpdateInterval = _uiState.value.locationUpdateInterval.toLongOrNull()
                     ?: 10000L,
                 backgroundTrackingToggle = _uiState.value.backgroundTrackingEnabled,
-                minDistanceMeters = 25f
+                minDistanceMeters = _uiState.value.minDistance.toFloatOrNull() ?: 25f
             )
             appPrefsStorage.setTrackSDKConfiguration(currentConfig)
         }
@@ -53,5 +58,6 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
 
 data class SettingsUiState(
     val locationUpdateInterval: String = "10000",
-    val backgroundTrackingEnabled: Boolean = false
+    val backgroundTrackingEnabled: Boolean = false,
+    val minDistance: String = "25"
 )

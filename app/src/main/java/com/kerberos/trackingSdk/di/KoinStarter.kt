@@ -47,7 +47,7 @@ object KoinStarter {
         viewModel { TripTrackViewModel(get(), get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get()) }
-        viewModel { LiveTrackingViewModel(get()) }
+        viewModel { LiveTrackingViewModel(get(), get()) }
     }
 
     private val repositoryModule = module {

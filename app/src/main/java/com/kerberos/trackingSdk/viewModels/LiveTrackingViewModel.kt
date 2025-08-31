@@ -8,6 +8,7 @@ import com.kerberos.livetrackingsdk.LiveTrackingManager
 import com.kerberos.livetrackingsdk.enums.TrackingState
 import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
 import com.kerberos.livetrackingsdk.interfaces.ITrackingStatusListener
+import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,8 +20,8 @@ import kotlinx.coroutines.flow.onStart
 class LiveTrackingViewModel(
     application: Application,
     private val addNewTripUseCase: AddNewTripUseCase,
-    private val addCurrentTripTrackUseCase: AddCurrentTripTrackUseCase
-    private val appPrefsStorage: com.kerberos.trackingSdk.dataStore.AppPrefsStorage
+    private val addCurrentTripTrackUseCase: AddCurrentTripTrackUseCase,
+    private val appPrefsStorage: AppPrefsStorage
 ) : AndroidViewModel(application),
     ITrackingStatusListener, ITrackingLocationListener {
 
@@ -49,7 +50,7 @@ class LiveTrackingViewModel(
 
     fun startTracking() {
         viewModelScope.launch {
-            addNewTripUseCase.execute(Unit)
+            addNewTripUseCase(Unit)
                 .onStart { }
                 .catch { }
                 .collect {
@@ -80,9 +81,9 @@ class LiveTrackingViewModel(
         viewModelScope.launch {
             _locationState.value = currentLocation
             currentLocation?.let {
-                addCurrentTripTrackUseCase.execute(it)
+                addCurrentTripTrackUseCase(it)
                     .catch { }
-                    .collect{}
+                    .collect {}
             }
         }
     }

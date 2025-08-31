@@ -15,6 +15,7 @@ import com.kerberos.trackingSdk.useCases.AddNewTripUseCase
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
+import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -55,7 +56,7 @@ object KoinStarter {
         viewModel { TripTrackViewModel(get(), get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get()) }
-        viewModel { LiveTrackingViewModel(get(), get(), get()) }
+        viewModel { LiveTrackingViewModel(get(), get(), get(), get()) }
 
     }
 
@@ -78,7 +79,7 @@ object KoinStarter {
         single { Gson() }
     }
     private val storageModule = module {
-        single { com.kerberos.trackingSdk.dataStore.AppPrefsStorage(get()) }
+        single { AppPrefsStorage(get()) }
     }
 
 }

@@ -2,6 +2,7 @@ package com.kerberos.trackingSdk.base
 
 import com.kerberos.trackingSdk.base.states.BaseState
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Base sealed use case
@@ -13,16 +14,19 @@ import kotlinx.coroutines.*
  * @constructor Create empty Base sealed use case
  */
 abstract class BaseSealedUseCase<out Type, in Params>(
-    private val ioScope: CoroutineScope,
-    private val main: CoroutineDispatcher = Dispatchers.Main,
+//    private val ioScope: CoroutineScope,
+//    private val main: CoroutineDispatcher = Dispatchers.Main,
 ) where Type : Any? {
+
+    abstract suspend operator fun invoke(params: Params): Flow<BaseState<Type>>
+
     /**
      * Run
      *
      * @param params
      * @return
      */
-    abstract suspend fun run(params: Params): BaseState<Type>?
+//    abstract suspend fun run(params: Params): BaseState<Type>?
 
     /**
      * Invoke
@@ -31,17 +35,17 @@ abstract class BaseSealedUseCase<out Type, in Params>(
      * @param onResult
      * @receiver
      */
-    operator fun invoke(
-        params: Params,
-        onResult: (BaseState<Type>) -> Unit = {},
-    ) {
-        ioScope.launch {
-            val result = async { run(params) }
-            withContext(main) {
-                result.await()?.let { onResult(it) }
-            }
-        }
-    }
+//    operator fun invoke(
+//        params: Params,
+//        onResult: (BaseState<Type>) -> Unit = {},
+//    ) {
+//        ioScope.launch {
+//            val result = async { run(params) }
+//            withContext(main) {
+//                result.await()?.let { onResult(it) }
+//            }
+//        }
+//    }
 
     /**
      * None

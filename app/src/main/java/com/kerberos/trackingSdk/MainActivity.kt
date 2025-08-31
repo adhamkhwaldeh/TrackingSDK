@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kerberos.trackingSdk.ui.BottomNavigationBar
 import com.kerberos.trackingSdk.ui.LiveTrackingScreen
+import com.kerberos.trackingSdk.ui.MainScreen
 import com.kerberos.trackingSdk.ui.theme.ui.theme.MyApplicationTheme
 import com.kerberos.trackingSdk.ui.trip.TripMapScreen
 import com.kerberos.trackingSdk.ui.trip.TripScreen
@@ -33,21 +34,3 @@ class MainActivity : ComponentActivity() {
 
 }
 
-@Composable
-fun MainScreen() {
-    val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "List",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("Map") { TripMapScreen() }
-            composable("List") { TripScreen() }
-            composable("Settings") { SettingsScreen() }
-            composable("Live") { LiveTrackingScreen() }
-        }
-    }
-}

@@ -26,7 +26,9 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
             _uiState.value = SettingsUiState(
                 locationUpdateInterval = config?.locationUpdateInterval?.toString() ?: "10000",
                 backgroundTrackingEnabled = config?.backgroundTrackingToggle ?: false,
-                minDistance = config?.minDistanceMeters?.toString() ?: "25"
+                minDistance = config?.minDistanceMeters?.toString() ?: "25",
+                language = appPrefsStorage.getLanguage() ?: "English",
+                theme = appPrefsStorage.getTheme() ?: "Light"
             )
         }
     }
@@ -43,6 +45,14 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
         _uiState.value = _uiState.value.copy(minDistance = distance)
     }
 
+    fun onLanguageChanged(language: String) {
+        _uiState.value = _uiState.value.copy(language = language)
+    }
+
+    fun onThemeChanged(theme: String) {
+        _uiState.value = _uiState.value.copy(theme = theme)
+    }
+
     fun saveSettings() {
         viewModelScope.launch {
             val currentConfig = SdkSettings(
@@ -52,6 +62,8 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
                 minDistanceMeters = _uiState.value.minDistance.toFloatOrNull() ?: 25f
             )
             appPrefsStorage.setTrackSDKConfiguration(currentConfig)
+            appPrefsStorage.saveLanguage(_uiState.value.language)
+            appPrefsStorage.saveTheme(_uiState.value.theme)
         }
     }
 }
@@ -59,5 +71,7 @@ class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
 data class SettingsUiState(
     val locationUpdateInterval: String = "10000",
     val backgroundTrackingEnabled: Boolean = false,
-    val minDistance: String = "25"
+    val minDistance: String = "25",
+    val language: String = "English",
+    val theme: String = "Light"
 )

@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.kerberos.livetrackingsdk.viewModels.SettingsViewModel
+import com.kerberos.trackingSdk.viewModels.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    // ... existing plugins ...
+    id("kotlin-kapt")
 }
 
 android {
@@ -74,6 +76,28 @@ dependencies {
     implementation(libs.androidx.paging.compose)
 
     implementation(libs.koin.androidx.compose)
+
+    implementation(libs.gson)
+
+    implementation(libs.opencsv)
+
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
+
+    kapt(libs.androidx.room.compiler)
+    testImplementation(libs.androidx.room.testing)
+
+    implementation(libs.androidx.paging.runtime) // Latest stable
+    implementation(libs.timber)
+
+    implementation(libs.koin.android)
+    implementation(libs.koin.core)
+    implementation(libs.koin.annotations)
+    kapt(libs.koin.ksp.compiler)
 
     implementation(project(":liveTrackingSdk"))
 

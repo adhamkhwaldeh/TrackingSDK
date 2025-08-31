@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.kerberos.livetrackingsdk.viewModels.TripTrackViewModel
+import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

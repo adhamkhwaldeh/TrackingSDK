@@ -1,6 +1,6 @@
 package com.kerberos.livetrackingsdk
 
-object LiveTrackingManager {
+class LiveTrackingManager {
 
     fun initialize() {
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kerberos.livetrackingsdk.viewModels.TripViewModel
+import com.kerberos.trackingSdk.viewModels.TripViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -137,32 +137,73 @@ fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
                 }
             }
 
-            lazyTripItems.loadState.let { loadState ->
-                if (loadState.refresh is LoadState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-                if (loadState.refresh is LoadState.Error) {
-                    val error = (loadState.refresh as LoadState.Error).error
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "Error: ${error.message}")
-                        Button(onClick = { lazyTripItems.retry() }) {
-                            Text(text = "Retry")
-                        }
+            // Handle load states: initial loading, error, empty
+            val refreshState = lazyTripItems.loadState.refresh
+            val appendState = lazyTripItems.loadState.append
+            if (refreshState is LoadState.Loading && lazyTripItems.itemCount == 0) {
+                // initial loading
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (refreshState is LoadState.Error && lazyTripItems.itemCount == 0) {
+                val error = (refreshState as LoadState.Error).error
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Error: ${error.message ?: "Unknown"}")
+                    Button(onClick = { lazyTripItems.retry() }) {
+                        Text(text = "Retry")
                     }
                 }
-                if (loadState.append.endOfPaginationReached && lazyTripItems.itemCount == 0) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "No trips found.")
+            } else if (appendState is LoadState.Error) {
+                // show small retry when appending pages fail
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Failed to load more: ${(appendState as LoadState.Error).error.message ?: "Unknown"}")
+                    Button(onClick = { lazyTripItems.retry() }) {
+                        Text(text = "Retry")
                     }
+                }
+            } else if (lazyTripItems.loadState.append.endOfPaginationReached && lazyTripItems.itemCount == 0) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No trips found.")
                 }
             }
         }
     }
 }
+
+//            lazyTripItems.loadState.let { loadState ->
+//                if (loadState.refresh is LoadState.Loading) {
+//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//                }
+//                if (loadState.refresh is LoadState.Error) {
+//                    val error = (loadState.refresh as LoadState.Error).error
+//                    Column(
+//                        modifier = Modifier.fillMaxSize(),
+//                        verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Text(text = "Error: ${error.message}")
+//                        Button(onClick = { lazyTripItems.retry() }) {
+//                            Text(text = "Retry")
+//                        }
+//                    }
+//                }
+//                if (loadState.append.endOfPaginationReached && lazyTripItems.itemCount == 0) {
+//                    Box(
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(text = "No trips found.")
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

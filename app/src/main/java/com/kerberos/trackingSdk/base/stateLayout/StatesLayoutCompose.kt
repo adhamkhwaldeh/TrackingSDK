@@ -9,7 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalContext
-import com.kerberos.livetrackingsdk.base.states.BaseState
+import com.kerberos.trackingSdk.base.states.BaseState
 import com.kerberos.trackingSdk.base.stateLayout.defaultStates.InternalServerErrorCompose
 import com.kerberos.trackingSdk.base.stateLayout.defaultStates.NoInternetConnectionCompose
 import com.kerberos.trackingSdk.base.stateLayout.defaultStates.NotAuthorizedCompose

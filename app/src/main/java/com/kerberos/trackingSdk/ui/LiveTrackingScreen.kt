@@ -55,7 +55,7 @@ fun LiveTrackingScreen(
         Row {
             Button(
                 onClick = { viewModel.pauseTracking() },
-                enabled = trackingState == TrackingState.TRACKING
+                enabled = trackingState == TrackingState.STARTED
             ) {
                 Text("Pause")
             }

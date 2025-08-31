@@ -18,6 +18,7 @@ import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
 import com.kerberos.trackingSdk.ui.BottomNavigationBar
 import com.kerberos.trackingSdk.ui.LiveTrackingScreen
 import com.kerberos.trackingSdk.ui.settings.SettingsScreen
+import com.kerberos.trackingSdk.ui.MainScreen
 import com.kerberos.trackingSdk.ui.theme.ui.theme.MyApplicationTheme
 import com.kerberos.trackingSdk.ui.trip.TripMapScreen
 import com.kerberos.trackingSdk.ui.trip.TripScreen
@@ -52,21 +53,3 @@ class MainActivity : BaseActivity() {
     }
 }
 
-@Composable
-fun MainScreen() {
-    val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "List",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("Map") { TripMapScreen() }
-            composable("List") { TripScreen() }
-            composable("Settings") { SettingsScreen() }
-            composable("Live") { LiveTrackingScreen() }
-        }
-    }
-}

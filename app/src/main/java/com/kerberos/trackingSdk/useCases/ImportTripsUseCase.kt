@@ -6,8 +6,8 @@ import com.kerberos.trackingSdk.repositories.repositories.TripRepository
 import java.io.InputStream
 
 class ImportTripsUseCase(
-    private val tripRepository: com.kerberos.trackingSdk.repositories.repositories.TripRepository,
-    private val tripImporter: com.kerberos.trackingSdk.importer.TripImporter
+    private val tripRepository: TripRepository,
+    private val tripImporter: TripImporter
 ) {
     suspend fun execute(inputStream: InputStream) {
         val trips = tripImporter.import(inputStream).map { it.toTrip() }

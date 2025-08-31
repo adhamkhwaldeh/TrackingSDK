@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -42,8 +44,8 @@ fun TripMapScreen(viewModel: TripTrackViewModel = koinViewModel()) {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-    LaunchedEffect(locationPermissionState.hasPermission) {
-        if (locationPermissionState.hasPermission) {
+    LaunchedEffect(locationPermissionState.permission) {
+        if (locationPermissionState.status == PermissionStatus.Granted) {
             viewModel.startLocationUpdates()
         } else {
             locationPermissionState.launchPermissionRequest()

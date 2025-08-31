@@ -32,6 +32,26 @@ class AppPrefsStorage(var context: Context) : PreferenceStorage {
             Gson().toJson(loggedUser)
         )
     }
+
+    override suspend fun getLanguage(): String? {
+        return context.dataStore.getValue(PreferencesKeys.LANGUAGE, "English")
+    }
+
+    override suspend fun saveLanguage(language: String) {
+        context.dataStore.setValue(PreferencesKeys.LANGUAGE, language)
+    }
+
+    override suspend fun getTheme(): String? {
+        return context.dataStore.getValue(PreferencesKeys.THEME, "Light")
+    }
+
+    override fun getThemeFlow(): Flow<String?> {
+        return context.dataStore.getValueAsFlow(PreferencesKeys.THEME, "Light")
+    }
+
+    override suspend fun saveTheme(theme: String) {
+        context.dataStore.setValue(PreferencesKeys.THEME, theme)
+    }
     //endregion
 
     /***
@@ -83,4 +103,11 @@ class AppPrefsStorage(var context: Context) : PreferenceStorage {
         }
     }
 
+    private suspend fun <T> DataStore<Preferences>.getValue(
+        key: Preferences.Key<T>,
+        defaultValue: T
+    ): T {
+        val preferences = this.data.first()
+        return preferences[key] ?: defaultValue
+    }
 }

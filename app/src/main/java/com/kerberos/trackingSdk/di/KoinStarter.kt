@@ -10,6 +10,8 @@ import com.kerberos.trackingSdk.repositories.repositories.TripRepository
 import com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository
 import com.kerberos.trackingSdk.viewModels.LiveTrackingViewModel
 import com.kerberos.trackingSdk.viewModels.SettingsViewModel
+import com.kerberos.trackingSdk.useCases.AddCurrentTripTrackUseCase
+import com.kerberos.trackingSdk.useCases.AddNewTripUseCase
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
@@ -33,10 +35,16 @@ object KoinStarter {
                     factoryModule,
                     serializationModule,
                     storageModule,
-                    managerModule
+                    managerModule,
+                    useCaseModule
                 )
             )
         }
+    }
+
+    private val useCaseModule = module {
+        factory { AddNewTripUseCase(get()) }
+        factory { AddCurrentTripTrackUseCase(get()) }
     }
 
     private val managerModule = module {
@@ -47,7 +55,7 @@ object KoinStarter {
         viewModel { TripTrackViewModel(get(), get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get()) }
-        viewModel { LiveTrackingViewModel(get()) }
+        viewModel { LiveTrackingViewModel(get(), get(), get()) }
     }
 
     private val repositoryModule = module {

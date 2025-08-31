@@ -17,12 +17,10 @@ class TripViewModel constructor(
     private val tripPagingRepository: com.kerberos.trackingSdk.repositories.repositories.TripPagingRepository,
     private val tripUseCaseFactory: com.kerberos.trackingSdk.factories.TripUseCaseFactory,
     private val context: Context
-) :
-    ViewModel() {
+) : ViewModel() {
 
-    fun getTripList(): Flow<PagingData<com.kerberos.trackingSdk.models.TripModel>> {
-        return tripPagingRepository.getTripPageList(1).cachedIn(viewModelScope)
-    }
+    val tripList: Flow<PagingData<TripModel>> = tripPagingRepository.getTripPageList()
+        .cachedIn(viewModelScope) // Important: caches the paging data in ViewModel lifecycle
 
     fun importTripsCsv(uri: Uri) {
         viewModelScope.launch {

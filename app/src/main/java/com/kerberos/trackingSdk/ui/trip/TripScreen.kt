@@ -28,8 +28,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
-    val lazyTripItems = viewModel.getTripList().collectAsLazyPagingItems()
-    val context = LocalContext.current
+    val lazyTripItems = viewModel.tripList.collectAsLazyPagingItems()
 
     val importCsvLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -158,7 +157,9 @@ fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
             } else if (appendState is LoadState.Error) {
                 // show small retry when appending pages fail
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = "Failed to load more: ${(appendState as LoadState.Error).error.message ?: "Unknown"}")

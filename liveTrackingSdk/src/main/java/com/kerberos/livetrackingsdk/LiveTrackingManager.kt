@@ -167,7 +167,6 @@ class LiveTrackingManager private constructor(
         return currentLocationTrackingManager?.invalidateConfiguration() ?: false
     }
 
-
     //#region Tracking location Listener
 
     /**
@@ -263,23 +262,40 @@ class LiveTrackingManager private constructor(
             val result = currentLocationTrackingManager?.onStartTracking() ?: false
             return result
         } catch (ex: Exception) {
-//
+
         }
         return false
     }
 
     override fun onResumeTracking(): Boolean {
-        return currentLocationTrackingManager?.onResumeTracking() ?: false
+        try {
+            val result = currentLocationTrackingManager?.onResumeTracking() ?: false
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
 
     override fun onPauseTracking(): Boolean {
-        return currentLocationTrackingManager?.onPauseTracking() ?: false
+        try {
+            val result = currentLocationTrackingManager?.onPauseTracking() ?: false
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
 
     override fun onStopTracking(): Boolean {
-        return currentLocationTrackingManager?.onStopTracking() ?: false
-    }
+        try {
+            val result = currentLocationTrackingManager?.onStopTracking() ?: false
+            return result
+        } catch (ex: Exception) {
 
+        }
+        return false
+    }
     //#endregion
 
 }

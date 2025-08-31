@@ -93,13 +93,3 @@ class SdkPreferencesManager(context: Context) {
         }
     }
 }
-
-// Helper extension for SharedPreferences.edit (if not already using androidx.core.content.edit)
-// If you have androidx.core:core-ktx dependency, this is available as sharedPreferences.edit { ... }
-/*
-private inline fun SharedPreferences.edit(action: SharedPreferences.Editor.() -> Unit) {
-    val editor = edit()
-    action(editor)
-    editor.apply()
-}
-*/

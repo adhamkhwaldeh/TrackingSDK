@@ -8,5 +8,4 @@ interface ITrackingActionsListener {
     fun onPauseTracking(): Boolean
 
     fun onStopTracking(): Boolean
-
 }

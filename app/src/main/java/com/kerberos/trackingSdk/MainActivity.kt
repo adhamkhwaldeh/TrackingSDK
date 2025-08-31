@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                         liveTrackingManager.onStopTracking()
                     }
                 )
-//                MainScreen()
+                MainScreen()
             }
         }
         liveTrackingManager.currentTrackingManager.initializeTrackingManager()

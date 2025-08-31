@@ -1,9 +1,8 @@
 package com.kerberos.livetrackingsdk.interfaces
 
-import com.kerberos.livetrackingsdk.services.BaseTrackingService
+import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import kotlinx.coroutines.DelicateCoroutinesApi
 
-@OptIn(DelicateCoroutinesApi::class)
 interface IServiceExposeWithBinder {
-    fun getServiceInstance(): BaseTrackingService
+    fun getLocationTrackingManager(): LocationTrackingManager
 }

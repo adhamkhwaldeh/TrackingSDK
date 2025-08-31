@@ -7,7 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import com.google.gson.Gson
-import com.kerberos.livetrackingsdk.models.TrackSDKConfigurationModel
+import com.kerberos.livetrackingsdk.models.SdkSettings
 
 import kotlinx.coroutines.flow.*
 import java.io.IOException
@@ -17,16 +17,16 @@ class AppPrefsStorage(var context: Context) : PreferenceStorage {
     private val Context.dataStore by preferencesDataStore("AppPrefStorage")
 
     //region Logged user
-    override val trackSDKConfiguration: Flow<TrackSDKConfigurationModel?>
+    override val trackSDKConfiguration: Flow<SdkSettings?>
         get() = context.dataStore.getValueAsFlow(PreferencesKeys.TRACK_SDK_CONFIGURATION, "")
             .map { preferences ->
                 if (!preferences.isNullOrBlank()) Gson().fromJson(
                     preferences,
-                    TrackSDKConfigurationModel::class.java
+                    SdkSettings::class.java
                 ) else null
             }
 
-    override suspend fun setTrackSDKConfiguration(loggedUser: TrackSDKConfigurationModel) {
+    override suspend fun setTrackSDKConfiguration(loggedUser: SdkSettings) {
         context.dataStore.setValue(
             PreferencesKeys.TRACK_SDK_CONFIGURATION,
             Gson().toJson(loggedUser)

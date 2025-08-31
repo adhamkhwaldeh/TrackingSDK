@@ -1,5 +1,6 @@
 package com.kerberos.trackingSdk
 
+import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kerberos.livetrackingsdk.LiveTrackingManager
+import com.kerberos.livetrackingsdk.enums.LiveTrackingMode
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
 import com.kerberos.livetrackingsdk.trackingManagers.BackgroundTrackingManager
 import com.kerberos.trackingSdk.viewModels.TripStatus
 import com.kerberos.trackingSdk.ui.BottomNavigationBar
@@ -20,12 +24,17 @@ import com.kerberos.trackingSdk.ui.trip.TripScreen
 import com.kerberos.trackingSdk.ui.settings.SettingsScreen
 import com.kerberos.trackingSdk.ui.trip.TripControls
 import kotlinx.coroutines.DelicateCoroutinesApi
+import timber.log.Timber
 
 @OptIn(DelicateCoroutinesApi::class)
 class MainActivity : ComponentActivity() {
 
-    private val trackServiceUtils: BackgroundTrackingManager by lazy {
-        BackgroundTrackingManager(TripBackgroundService::class.java)
+    private val liveTrackingManager: LiveTrackingManager by lazy {
+        LiveTrackingManager(
+            this,
+            TripBackgroundService::class.java,
+            LiveTrackingMode.BACKGROUND_SERVICE,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,22 +45,35 @@ class MainActivity : ComponentActivity() {
                 TripControls(
                     tripStatus = TripStatus.RUNNING,
                     onStart = {
-                        trackServiceUtils.itsTrackService?.startTracking()
+                        liveTrackingManager.currentTrackingManager.onStartTracking()
                     },
                     onPause = {
-                        trackServiceUtils.itsTrackService?.pauseTracking()
+                        liveTrackingManager.currentTrackingManager.onPauseTracking()
                     },
                     onResume = {
-                        trackServiceUtils.itsTrackService?.resumeTracking()
+                        liveTrackingManager.currentTrackingManager.onResumeTracking()
                     },
                     onStop = {
-                        trackServiceUtils.itsTrackService?.stopTracking()
+                        liveTrackingManager.currentTrackingManager.onStopTracking()
                     }
                 )
 //                MainScreen()
             }
         }
-        trackServiceUtils.bind(this)
+        liveTrackingManager.currentTrackingManager.initializeTrackingManager()
+
+        liveTrackingManager.currentTrackingManager.onStartTracking()
+
+        liveTrackingManager.addTrackingLocationListener(listener = object :
+            ITrackingLocationInterface {
+            override fun onLocationUpdated(currentLocation: Location?) {
+                Timber.d("onLocationUpdated")
+            }
+
+            override fun onLocationUpdateFailed(exception: Exception) {
+                Timber.d("onLocationUpdateFailed")
+            }
+        })
     }
 
 }

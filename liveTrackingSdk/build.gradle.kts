@@ -83,5 +83,8 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.timber)
 
+    implementation(libs.androidx.datastore.preferences) // Or the latest version
+    implementation(libs.androidx.lifecycle.runtime.ktx) // Often used with DataStore for coroutine scopes
+
 }
 

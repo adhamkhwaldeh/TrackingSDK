@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.kerberos.livetrackingsdk.dataStore.SdkPreferencesManager
 import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
 import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
 import com.kerberos.livetrackingsdk.enums.TrackingState
@@ -20,11 +21,8 @@ import com.kerberos.livetrackingsdk.exceptions.GpsNotEnabledException
 import com.kerberos.livetrackingsdk.exceptions.PermissionNotGrantedException
 import com.kerberos.livetrackingsdk.helpers.PermissionsHelper
 
-class LocationTrackingManager private constructor(
+class LocationTrackingManager(
     val context: Context,
-    private val minTimeMillis: Long = 0L,
-    private val minDistanceMeters: Float = 0f,
-    initialListeners: List<ITrackingLocationInterface> = emptyList(),
 ) : ITrackingActionsInterface {
 
     private val fusedClient: FusedLocationProviderClient by lazy {
@@ -35,18 +33,31 @@ class LocationTrackingManager private constructor(
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
+    private val sdkPreferencesManager: SdkPreferencesManager by lazy {
+        SdkPreferencesManager(context)
+    }
+
     private val request: LocationRequest
         get() {
-            // Use the values set by the builder
-            return LocationRequest.Builder(
+
+            val minTimeMillis = sdkPreferencesManager.getSettings().locationUpdateInterval
+            val minDistanceMeters = sdkPreferencesManager.getSettings().minDistanceMeters
+
+            var builder = LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 minTimeMillis.coerceAtLeast(1000L)
             ) // Ensure interval isn't too small
                 // .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Already set in constructor
                 .setMinUpdateIntervalMillis(minTimeMillis) // Smallest interval if updates are more frequent from other sources
-                .setMinUpdateDistanceMeters(minDistanceMeters)
+
+            if (minDistanceMeters != null) {
+                builder = builder.setMinUpdateDistanceMeters(minDistanceMeters)
                 // .setMaxUpdates(1) // Remove if you want continuous updates
-                .build()
+                // Use the values set by the builder
+            }
+
+            return builder.build()
+
 //            return LocationRequest.Builder(1000L)
 //                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
 //                .setMinUpdateIntervalMillis(minTimeMillis)
@@ -57,7 +68,7 @@ class LocationTrackingManager private constructor(
         }
 
     private val trackingLocationInterfaces: MutableList<ITrackingLocationInterface> =
-        initialListeners.toMutableList()
+        mutableListOf()
 
     private val callback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
@@ -95,31 +106,6 @@ class LocationTrackingManager private constructor(
             return currentTrackingState
         }
 
-    // Builder class
-    class Builder(private val context: Context) {
-        private var minTimeMillis: Long = 5000L // Default value for minTimeMillis (e.g., 5 seconds)
-        private var minDistanceMeters: Float = 10f // Default value for minDistanceMeters (e.g., 10 meters)
-        private val listeners: MutableList<ITrackingLocationInterface> = mutableListOf()
-
-        fun setMinTimeMillis(minTimeMillis: Long): Builder = apply {
-            this.minTimeMillis = minTimeMillis
-        }
-
-        fun setMinDistanceMeters(minDistanceMeters: Float): Builder = apply {
-            this.minDistanceMeters = minDistanceMeters
-        }
-
-        fun addTrackingLocationListener(listener: ITrackingLocationInterface): Builder = apply {
-            if (!this.listeners.contains(listener)) {
-                this.listeners.add(listener)
-            }
-        }
-
-        fun build(): LocationTrackingManager {
-            return LocationTrackingManager(context, minTimeMillis, minDistanceMeters, listeners)
-        }
-    }
-
     /**
      * Adds a tracking location interface to receive location updates.
      *
@@ -128,9 +114,6 @@ class LocationTrackingManager private constructor(
     fun addTrackingLocationListener(listener: ITrackingLocationInterface) {
         if (!trackingLocationInterfaces.contains(listener)) {
             trackingLocationInterfaces.add(listener)
-            // If tracking is already active and we add a new listener,
-            // consider providing it the last known location immediately if available.
-            // Or, it will just start receiving new updates.
         }
     }
 
@@ -184,6 +167,15 @@ class LocationTrackingManager private constructor(
         currentTrackingState = TrackingState.IDLE
         fusedClient.removeLocationUpdates(callback)
         return true
+    }
+    /**
+     * Invalidates the current configuration by stopping and restarting the tracking.
+     * This is useful when settings have changed and you want to apply the new configuration.
+     *
+     * @return True if both stopping and starting tracking were successful, false otherwise.
+     */
+    fun invalidateConfiguration(): Boolean {
+        return onStopTracking() && onStartTracking()
     }
 
 }

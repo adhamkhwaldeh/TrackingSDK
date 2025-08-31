@@ -2,15 +2,16 @@ package com.kerberos.trackingSdk.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kerberos.livetrackingsdk.models.SdkSettings
 import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
-import com.kerberos.livetrackingsdk.models.TrackSDKConfigurationModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val appPrefsStorage: com.kerberos.trackingSdk.dataStore.AppPrefsStorage) : ViewModel() {
+class SettingsViewModel(private val appPrefsStorage: com.kerberos.trackingSdk.dataStore.AppPrefsStorage) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -39,10 +40,11 @@ class SettingsViewModel(private val appPrefsStorage: com.kerberos.trackingSdk.da
 
     fun saveSettings() {
         viewModelScope.launch {
-            val currentConfig = TrackSDKConfigurationModel(
+            val currentConfig = SdkSettings(
                 locationUpdateInterval = _uiState.value.locationUpdateInterval.toLongOrNull()
                     ?: 10000L,
-                backgroundTrackingToggle = _uiState.value.backgroundTrackingEnabled
+                backgroundTrackingToggle = _uiState.value.backgroundTrackingEnabled,
+                minDistanceMeters = 25f
             )
             appPrefsStorage.setTrackSDKConfiguration(currentConfig)
         }

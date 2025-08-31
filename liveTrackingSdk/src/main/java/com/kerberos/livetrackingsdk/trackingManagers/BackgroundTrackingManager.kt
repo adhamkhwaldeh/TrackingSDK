@@ -12,32 +12,28 @@ import com.kerberos.livetrackingsdk.BuildConfig
 import com.kerberos.livetrackingsdk.ITrackingService
 import com.kerberos.livetrackingsdk.interfaces.IServiceExposeWithBinder
 import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
-import com.kerberos.livetrackingsdk.interfaces.ITrackingManagerInterface
-import com.kerberos.livetrackingsdk.models.TrackSDKConfigurationModel
+import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.livetrackingsdk.services.BaseTrackingService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 
 @OptIn(DelicateCoroutinesApi::class)
 class BackgroundTrackingManager(
+    context: Context,
     val serviceClass: Class<out BaseTrackingService>,
-) : ITrackingManagerInterface {
-
-    var mainContext: Context? = null
+) : BaseTrackingManager(context) {
 
     var itsTrackService: ITrackingService? = null
 
-    var serviceInstance: BaseTrackingService? = null
+    var locationTrackingManager: LocationTrackingManager? = null
 
     private val svcConn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, binder: IBinder) {
-//            if (BuildConfig.DEBUG) {
-//                Log.d("PLAYER", "Service came online");
-//            }
             itsTrackService = ITrackingService.Stub.asInterface(binder)
             if (itsTrackService is IServiceExposeWithBinder) { // You'd need to know the concrete stub type
-                serviceInstance =
-                    (itsTrackService as IServiceExposeWithBinder).getServiceInstance()
+                locationTrackingManager =
+                    (itsTrackService as IServiceExposeWithBinder).getLocationTrackingManager()
+
                 Timber.d("")
                 // Now you have the service instance, but this is only if in the same process
             }
@@ -48,41 +44,40 @@ class BackgroundTrackingManager(
                 Log.d("PLAYER", "Service offline")
             }
             itsTrackService = null
+            locationTrackingManager = null
         }
     }
 
-    fun bind(context: Context) {
+    override val locationManager: LocationTrackingManager?
+        get() {
+            return locationTrackingManager
+        }
+
+    //#region SDK actions
+
+    override fun initializeTrackingManager(): Boolean {
         val anIntent = Intent(context, serviceClass)
-        mainContext = context
         context.bindService(anIntent, svcConn, Context.BIND_AUTO_CREATE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ContextCompat.startForegroundService(context, anIntent)
         } else {
             context.startService(anIntent)
         }
+        return true
     }
 
-    fun unBind(context: Context) {
+    override fun destroyTrackingManager(): Boolean {
         try {
             context.unbindService(svcConn)
         } catch (e: java.lang.Exception) {
+
         }
+        return true
     }
 
+    //#endregion
 
-//    override val sdkConfiguration: TrackSDKConfigurationModel
-//        get() {
-//            return if (serviceInstance != null) {
-//                serviceInstance!!.ma
-//            } else {
-//                TrackSDKConfigurationModel(
-//                    locationUpdateInterval = 0L,
-//                    backgroundTrackingToggle = false,
-//                    serviceClass = null
-//                )
-//            }
-//        }
-
+    //#region actions
     override fun onStartTracking(): Boolean {
         return try {
             itsTrackService?.startTracking() ?: false
@@ -109,11 +104,11 @@ class BackgroundTrackingManager(
 
     override fun onStopTracking(): Boolean {
         return try {
-            if (mainContext != null) {
+            if (context != null) {
                 try {
-                    unBind(mainContext!!)
-                    val anIntent = Intent(mainContext, serviceClass)
-                    mainContext?.stopService(anIntent)
+                    destroyTrackingManager()
+                    val anIntent = Intent(context, serviceClass)
+                    context?.stopService(anIntent)
                 } catch (e: Exception) {
 
                 }
@@ -124,5 +119,6 @@ class BackgroundTrackingManager(
         }
     }
 
+    //#endregion
 
 }

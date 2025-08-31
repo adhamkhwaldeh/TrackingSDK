@@ -17,22 +17,147 @@ import android.os.RemoteException
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import com.kerberos.livetrackingsdk.ITrackingService
-import com.kerberos.livetrackingsdk.interfaces.ITrackingServiceInterface
 import com.kerberos.livetrackingsdk.enums.TrackingState
 import com.kerberos.livetrackingsdk.exceptions.DefaultNotificationConfigurationNotImplementedException
 import com.kerberos.livetrackingsdk.interfaces.IServiceExposeWithBinder
+import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
+import com.kerberos.livetrackingsdk.models.DefaultNotificationConfiguration
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 
 @DelicateCoroutinesApi
-abstract class BaseTrackingService : Service(), ITrackingServiceInterface {
+abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
+    ITrackingLocationInterface {
+
+    //#region customized properties and functions
+    abstract val serviceClassForRestart: Class<out Service>
+        get
+
+    abstract val defaultNotificationConfiguration: DefaultNotificationConfiguration?
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    open fun createNotification(): Notification {
+        if (defaultNotificationConfiguration == null) {
+            throw DefaultNotificationConfigurationNotImplementedException()
+        }
+        // depending on the Android API that we're dealing with we will have
+        // to use a specific method to create the notification
+        val channel = NotificationChannel(
+            defaultNotificationConfiguration!!.notificationChannelId,
+            defaultNotificationConfiguration!!.notificationChannelName,
+            NotificationManager.IMPORTANCE_HIGH
+        ).let {
+            it.description = defaultNotificationConfiguration!!.notificationChannelDescription
+            it.enableLights(true)
+            it.lightColor = Color.RED
+            it.enableVibration(true)
+            it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+            it
+        }
+        notificationManager.createNotificationChannel(channel)
+
+
+        val builder: Notification.Builder =
+            Notification.Builder(
+                this,
+                defaultNotificationConfiguration!!.notificationChannelId
+            ).setContentTitle(defaultNotificationConfiguration!!.contentTitle)
+                .setContentText(defaultNotificationConfiguration!!.contentText)
+                .setSmallIcon(defaultNotificationConfiguration!!.smallIcon)
+                .setTicker(defaultNotificationConfiguration!!.ticker)
+                .setOngoing(true) // Makes the notification non-dismissable, typical for foreground services
+                // Don't make sound/vibrate for subsequent updates
+                .setOnlyAlertOnce(true)        // Add actions based on the current state
+
+
+        when (locationTrackingManager.trackingState) {
+            TrackingState.IDLE -> {
+                builder.addAction(
+                    createAction(
+                        android.R.drawable.ic_media_play,
+                        "Start",
+                        ACTION_START_TRACKING,
+                        REQUEST_CODE_START
+                    )
+                )
+            }
+
+            TrackingState.STARTED -> {
+                builder.addAction(
+                    createAction(
+                        android.R.drawable.ic_media_pause,
+                        "Pause",
+                        ACTION_PAUSE_TRACKING,
+                        REQUEST_CODE_PAUSE
+                    )
+                )
+                // Optionally add a stop action
+                builder.addAction(
+                    createAction(
+                        android.R.drawable.ic_notification_clear_all,
+                        "Stop",
+                        ACTION_STOP_TRACKING,
+                        REQUEST_CODE_STOP
+                    )
+                )
+            }
+
+            TrackingState.PAUSED -> {
+                builder.addAction(
+                    createAction(
+                        android.R.drawable.ic_media_pause,
+                        "Resume",
+                        ACTION_RESUME_TRACKING,
+                        REQUEST_CODE_RESUME
+                    )
+                )
+                builder.addAction(
+                    createAction(
+                        android.R.drawable.ic_notification_clear_all,
+                        "Stop",
+                        ACTION_STOP_TRACKING,
+                        REQUEST_CODE_STOP
+                    )
+                )
+            }
+        }
+
+        defaultNotificationConfiguration!!.defaultIntentActivity?.let { defaultIntentActivity ->
+            val pendingIntent: PendingIntent =
+                Intent(
+                    this,
+                    defaultIntentActivity::class.java
+                ).let { notificationIntent ->
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        PendingIntent.getActivity(
+                            this,
+                            0,
+                            notificationIntent,
+                            PendingIntent.FLAG_MUTABLE
+                        )
+                    } else {
+                        PendingIntent.getActivity(
+                            this,
+                            0,
+                            notificationIntent,
+                            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                    }
+                }
+            builder.setContentIntent(pendingIntent)
+        }
+
+
+        return builder.build()
+    }
+
+    //#endregion
 
     private val locationTrackingManager: LocationTrackingManager by lazy {
-        LocationTrackingManager.Builder(applicationContext) // or any other context
-            .setMinTimeMillis(10000L) // Update every 10 seconds
-            .setMinDistanceMeters(25f) // Or when moved by 25 meters
-            .build()
+        LocationTrackingManager(applicationContext)
     }
 
     private var wakeLock: PowerManager.WakeLock? = null
@@ -69,8 +194,8 @@ abstract class BaseTrackingService : Service(), ITrackingServiceInterface {
             }
 
             // This would be a custom addition, not standard AIDL practice for IPC
-            override fun getServiceInstance(): BaseTrackingService { // Or TripBackgroundService
-                return this@BaseTrackingService // Or this@TripBackgroundService
+            override fun getLocationTrackingManager(): LocationTrackingManager {
+                return this@BaseTrackingService.locationTrackingManager // Or this@TripBackgroundService
             }
 
 //        @Throws(RemoteException::class)
@@ -118,9 +243,8 @@ abstract class BaseTrackingService : Service(), ITrackingServiceInterface {
     private val ACTION_PAUSE_TRACKING = "com.yourpackage.ACTION_PAUSE_TRACKING"
     private val ACTION_RESUME_TRACKING = "com.yourpackage.ACTION_RESUME_TRACKING"
     private val ACTION_STOP_TRACKING = "com.yourpackage.ACTION_STOP_TRACKING"
-// Good to have a stop action too
 
-//#endregion
+    //#endregion
 
     //#region tracking functions
     override fun onStartTracking(): Boolean {
@@ -138,8 +262,7 @@ abstract class BaseTrackingService : Service(), ITrackingServiceInterface {
     override fun onStopTracking(): Boolean {
         return locationTrackingManager.onStopTracking()
     }
-
-//#endregion
+    //#endregion
 
     override fun onBind(intent: Intent): IBinder? {
         Timber.d("Some component want to bind with the service")
@@ -265,120 +388,6 @@ abstract class BaseTrackingService : Service(), ITrackingServiceInterface {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Or your min SDK for foreground service
             notificationManager.notify(YOUR_NOTIFICATION_ID, createNotification())
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun createNotification(): Notification {
-        if (defaultNotificationConfiguration == null) {
-            throw DefaultNotificationConfigurationNotImplementedException()
-        }
-        // depending on the Android API that we're dealing with we will have
-        // to use a specific method to create the notification
-        val channel = NotificationChannel(
-            defaultNotificationConfiguration!!.notificationChannelId,
-            defaultNotificationConfiguration!!.notificationChannelName,
-            NotificationManager.IMPORTANCE_HIGH
-        ).let {
-            it.description = defaultNotificationConfiguration!!.notificationChannelDescription
-            it.enableLights(true)
-            it.lightColor = Color.RED
-            it.enableVibration(true)
-            it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-            it
-        }
-        notificationManager.createNotificationChannel(channel)
-
-
-        val builder: Notification.Builder =
-            Notification.Builder(
-                this,
-                defaultNotificationConfiguration!!.notificationChannelId
-            ).setContentTitle(defaultNotificationConfiguration!!.contentTitle)
-                .setContentText(defaultNotificationConfiguration!!.contentText)
-                .setSmallIcon(defaultNotificationConfiguration!!.smallIcon)
-                .setTicker(defaultNotificationConfiguration!!.ticker)
-                .setOngoing(true) // Makes the notification non-dismissable, typical for foreground services
-                // Don't make sound/vibrate for subsequent updates
-                .setOnlyAlertOnce(true)        // Add actions based on the current state
-
-
-        when (locationTrackingManager.trackingState) {
-            TrackingState.IDLE -> {
-                builder.addAction(
-                    createAction(
-                        android.R.drawable.ic_media_play,
-                        "Start",
-                        ACTION_START_TRACKING,
-                        REQUEST_CODE_START
-                    )
-                )
-            }
-
-            TrackingState.STARTED -> {
-                builder.addAction(
-                    createAction(
-                        android.R.drawable.ic_media_pause,
-                        "Pause",
-                        ACTION_PAUSE_TRACKING,
-                        REQUEST_CODE_PAUSE
-                    )
-                )
-                // Optionally add a stop action
-                builder.addAction(
-                    createAction(
-                        android.R.drawable.ic_notification_clear_all,
-                        "Stop",
-                        ACTION_STOP_TRACKING,
-                        REQUEST_CODE_STOP
-                    )
-                )
-            }
-
-            TrackingState.PAUSED -> {
-                builder.addAction(
-                    createAction(
-                        android.R.drawable.ic_media_pause,
-                        "Resume",
-                        ACTION_RESUME_TRACKING,
-                        REQUEST_CODE_RESUME
-                    )
-                )
-                builder.addAction(
-                    createAction(
-                        android.R.drawable.ic_notification_clear_all,
-                        "Stop",
-                        ACTION_STOP_TRACKING,
-                        REQUEST_CODE_STOP
-                    )
-                )
-            }
-        }
-
-        val pendingIntent: PendingIntent =
-            Intent(
-                this,
-                defaultNotificationConfiguration!!.defaultIntentActivity::class.java
-            ).let { notificationIntent ->
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        notificationIntent,
-                        PendingIntent.FLAG_MUTABLE
-                    )
-                } else {
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        notificationIntent,
-                        PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                }
-            }
-
-        builder.setContentIntent(pendingIntent)
-        return builder.build()
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {

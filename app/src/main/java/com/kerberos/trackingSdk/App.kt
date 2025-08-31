@@ -8,7 +8,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        LiveTrackingManager().initialize()
+//        LiveTrackingManager().initialize()
         KoinStarter.startKoin(this)
     }
 

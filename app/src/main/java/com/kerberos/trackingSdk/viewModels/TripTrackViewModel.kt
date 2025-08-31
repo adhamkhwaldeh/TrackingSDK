@@ -1,7 +1,11 @@
 package com.kerberos.trackingSdk.viewModels
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
+import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.trackingSdk.orm.TripTrack
 import com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,11 +19,17 @@ enum class TripStatus {
     PAUSED
 }
 
-class TripTrackViewModel(private val tripTrackRepository: TripTrackRepository) :
-    ViewModel() {
+class TripTrackViewModel(
+    private val tripTrackRepository: TripTrackRepository,
+    private val locationTrackingManager: LocationTrackingManager
+) :
+    ViewModel(), ITrackingLocationListener {
 
     private val _tripTracks = MutableStateFlow<List<TripTrack>>(emptyList())
     val tripTracks: StateFlow<List<TripTrack>> = _tripTracks
+
+    private val _currentLocation = MutableStateFlow<LatLng?>(null)
+    val currentLocation: StateFlow<LatLng?> = _currentLocation
 
     private val _tripStatus = MutableStateFlow(TripStatus.STOPPED)
     val tripStatus: StateFlow<TripStatus> = _tripStatus
@@ -47,5 +57,24 @@ class TripTrackViewModel(private val tripTrackRepository: TripTrackRepository) :
 
     fun stopTrip() {
         _tripStatus.value = TripStatus.STOPPED
+    }
+
+    fun startLocationUpdates() {
+        locationTrackingManager.addTrackingLocationListener(this)
+        locationTrackingManager.onStartTracking()
+    }
+
+    fun stopLocationUpdates() {
+        locationTrackingManager.onStopTracking()
+    }
+
+    override fun onLocationUpdated(location: Location?) {
+        location?.let {
+            _currentLocation.value = LatLng(it.latitude, it.longitude)
+        }
+    }
+
+    override fun onLocationUpdateFailed(error: Exception) {
+        // Handle location update failure
     }
 }

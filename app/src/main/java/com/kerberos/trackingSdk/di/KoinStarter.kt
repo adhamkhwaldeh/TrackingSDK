@@ -12,6 +12,7 @@ import com.kerberos.trackingSdk.viewModels.LiveTrackingViewModel
 import com.kerberos.trackingSdk.viewModels.SettingsViewModel
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
+import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -31,14 +32,19 @@ object KoinStarter {
                     viewModelModule,
                     factoryModule,
                     serializationModule,
-                    storageModule
+                    storageModule,
+                    managerModule
                 )
             )
         }
     }
 
+    private val managerModule = module {
+        single { LocationTrackingManager(get()) }
+    }
+
     private val viewModelModule = module {
-        viewModel { TripTrackViewModel(get()) }
+        viewModel { TripTrackViewModel(get(), get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get()) }
         viewModel { LiveTrackingViewModel(get()) }

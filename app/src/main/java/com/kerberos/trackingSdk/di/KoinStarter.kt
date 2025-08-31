@@ -8,6 +8,7 @@ import com.kerberos.trackingSdk.orm.LiveTrackingDatabase
 import com.kerberos.trackingSdk.repositories.repositories.TripPagingRepositoryImpl
 import com.kerberos.trackingSdk.repositories.repositories.TripRepository
 import com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository
+import com.kerberos.trackingSdk.viewModels.LiveTrackingViewModel
 import com.kerberos.trackingSdk.viewModels.SettingsViewModel
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
@@ -40,6 +41,7 @@ object KoinStarter {
         viewModel { TripTrackViewModel(get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get()) }
+        viewModel { LiveTrackingViewModel(get()) }
     }
 
     private val repositoryModule = module {

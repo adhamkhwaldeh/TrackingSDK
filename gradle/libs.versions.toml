@@ -29,8 +29,10 @@ navigationRuntimeAndroid = "2.9.3"
 playServicesMapsVersion = "18.2.0"
 roomRuntime = "2.7.2"
 timber = "5.0.1"
+accompanist-permissions = "0.34.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 androidx-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptiveNavigation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }

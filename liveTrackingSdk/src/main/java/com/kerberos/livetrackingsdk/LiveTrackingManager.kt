@@ -3,8 +3,10 @@ package com.kerberos.livetrackingsdk
 import android.content.Context
 import com.kerberos.livetrackingsdk.dataStore.SdkPreferencesManager
 import com.kerberos.livetrackingsdk.enums.LiveTrackingMode
-import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
-import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
+import com.kerberos.livetrackingsdk.interfaces.ITrackingStatusListener
+import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
+import com.kerberos.livetrackingsdk.interfaces.ITrackingSdkModeStatusListener
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.livetrackingsdk.models.SdkSettings
 import com.kerberos.livetrackingsdk.services.BaseTrackingService
@@ -14,29 +16,121 @@ import com.kerberos.livetrackingsdk.trackingManagers.BaseTrackingManager
 import com.kerberos.livetrackingsdk.trackingManagers.ForegroundTrackingManager
 
 
-class LiveTrackingManager(
+class LiveTrackingManager private constructor(
     val context: Context,
     backgroundService: Class<out BaseTrackingService> = DefaultTrackingService::class.java,
     val liveTrackingMode: LiveTrackingMode = LiveTrackingMode.FOREGROUND_SERVICE,
-    sdkSettings: SdkSettings = SdkSettings(
-        minDistanceMeters = 1000f,
-        locationUpdateInterval = 1000L,
-        backgroundTrackingToggle = false
-    ),
-) {
+    val sdkPreferencesManager: SdkPreferencesManager,
+    private val trackingLocationListener: MutableList<ITrackingStatusListener> =
+        mutableListOf()
+) : ITrackingActionsListener, ITrackingSdkModeStatusListener {
 
-    private val sdkPreferencesManager: SdkPreferencesManager by lazy {
-        SdkPreferencesManager(context)
-    }
+    // Builder Class
+    class Builder(private val applicationContext: Context) {
+        // Default values are set here
 
-    init {
-        sdkPreferencesManager.updateAllSettings(sdkSettings)
+        private var backgroundService: Class<out BaseTrackingService> =
+            DefaultTrackingService::class.java
+
+        private var trackingMode: LiveTrackingMode = LiveTrackingMode.FOREGROUND_SERVICE
+
+        // For SdkSettings, we can either take individual params or an SdkSettings object
+        // Option 1: Individual params for SdkSettings
+        private var minDistance: Float? =
+            SdkPreferencesManager.DEFAULT_MIN_DISTANCE_METERS // Use defaults from manager
+        private var updateInterval: Long = SdkPreferencesManager.DEFAULT_LOCATION_UPDATE_INTERVAL
+        private var bgTrackingToggle: Boolean =
+            SdkPreferencesManager.DEFAULT_BACKGROUND_TRACKING_TOGGLE
+
+        // Option 2: SdkSettings object (can be combined with Option 1 for overrides)
+        private var customSdkSettings: SdkSettings? = null
+
+        // Initialize SdkPreferencesManager here to load persisted values for defaults
+        private val preferencesManager = SdkPreferencesManager(applicationContext)
+
+
+        init {
+            // Load persisted settings to override compile-time defaults for the builder
+            val persistedSettings =
+                preferencesManager.getSettings() // Synchronous for SharedPreferences
+            this.minDistance = persistedSettings.minDistanceMeters
+            this.updateInterval = persistedSettings.locationUpdateInterval
+            this.bgTrackingToggle = persistedSettings.backgroundTrackingToggle
+        }
+
+
+        fun setBackgroundService(serviceClass: Class<out BaseTrackingService>): Builder =
+            apply { // Or Service
+                this.backgroundService = serviceClass
+            }
+
+        fun setLiveTrackingMode(mode: LiveTrackingMode): Builder = apply {
+            this.trackingMode = mode
+        }
+
+        // --- Methods for SdkSettings ---
+        // Option 1: Set individual SdkSettings parameters
+        fun setMinDistanceMeters(distance: Float): Builder = apply {
+            this.minDistance = distance
+        }
+
+        fun setLocationUpdateInterval(interval: Long): Builder = apply {
+            this.updateInterval = interval
+        }
+
+        fun setBackgroundTrackingToggle(enabled: Boolean): Builder = apply {
+            this.bgTrackingToggle = enabled
+        }
+
+        // Option 2: Allow providing a full SdkSettings object
+        fun setSdkSettings(settings: SdkSettings): Builder = apply {
+            this.customSdkSettings = settings
+            // Override individual params if a full object is given
+            this.minDistance = settings.minDistanceMeters
+            this.updateInterval = settings.locationUpdateInterval
+            this.bgTrackingToggle = settings.backgroundTrackingToggle
+        }
+
+
+        fun build(): LiveTrackingManager {
+            val finalSdkSettings = customSdkSettings ?: SdkSettings(
+                minDistanceMeters = this.minDistance,
+                locationUpdateInterval = this.updateInterval,
+                backgroundTrackingToggle = this.bgTrackingToggle
+            )
+
+            // Important: Persist the final settings if they were set via the builder
+            // This ensures that the settings used for this session are saved for the next.
+            // Only update if they differ from what's already persisted to avoid unnecessary writes.
+            val currentlyPersisted = preferencesManager.getSettings()
+            if (finalSdkSettings != currentlyPersisted) {
+                // If using SharedPreferences, this is synchronous.
+                // If using DataStore, this would need to be handled in a coroutine.
+                preferencesManager.updateAllSettings(finalSdkSettings)
+            }
+
+
+            val sdkInstance = LiveTrackingManager(
+                context = applicationContext,
+                backgroundService = this.backgroundService,
+                liveTrackingMode = this.trackingMode,
+                sdkPreferencesManager = this.preferencesManager
+            )
+            // KerberosLiveTracking.INSTANCE = sdkInstance // Set the singleton instance
+            return sdkInstance
+        }
     }
 
     val trackingManagers: MutableList<BaseTrackingManager> = mutableListOf(
-        ForegroundTrackingManager(context),
-        BackgroundTrackingManager(context, backgroundService)
+        ForegroundTrackingManager(context, this),
+        BackgroundTrackingManager(context, backgroundService, this)
     )
+
+    val trackingLocationListeners: MutableList<ITrackingLocationListener> =
+        mutableListOf()
+
+    val trackingStateListeners: MutableList<ITrackingStatusListener> =
+        mutableListOf()
 
     val currentTrackingManager: BaseTrackingManager
         get() {
@@ -46,14 +140,22 @@ class LiveTrackingManager(
             }
         }
 
-    val currentLocationTrackingManager: LocationTrackingManager?
-        get() {
-            return currentTrackingManager.locationManager
-        }
+    var currentLocationTrackingManager: LocationTrackingManager? = null
+
+    override fun onTrackingSDKModeInitialized(
+        locationTrackingManager: LocationTrackingManager,
+        liveTrackingMode: LiveTrackingMode
+    ) {
+        locationTrackingManager.addTrackingLocationListener(trackingLocationListeners)
+        locationTrackingManager.trackingStateListeners = trackingStateListeners
+
+        currentLocationTrackingManager = locationTrackingManager
+
+    }
 
     fun changeTrackingMode(newMode: LiveTrackingMode): Boolean {
         if (newMode == liveTrackingMode) return true
-        val stopResult = currentTrackingManager.onStopTracking()
+        val stopResult = currentLocationTrackingManager?.onStopTracking() ?: false
         if (!stopResult) return false
         val initResult = currentTrackingManager.initializeTrackingManager()
         if (!initResult) return false
@@ -65,8 +167,18 @@ class LiveTrackingManager(
         return currentLocationTrackingManager?.invalidateConfiguration() ?: false
     }
 
-    fun addTrackingLocationListener(listener: ITrackingLocationInterface) {
-        currentLocationTrackingManager?.addTrackingLocationListener(listener)
+
+    //#region Tracking location Listener
+
+    /**
+     * Adds a tracking location interface to receive location updates.
+     *
+     * @param listener The interface to add.
+     */
+    fun addTrackingLocationListener(listener: ITrackingLocationListener) {
+        if (!trackingLocationListeners.contains(listener)) {
+            trackingLocationListeners.add(listener)
+        }
     }
 
     /**
@@ -74,16 +186,100 @@ class LiveTrackingManager(
      *
      * @param listener The interface to remove.
      */
-    fun removeTrackingLocationListener(listener: ITrackingLocationInterface) {
-        currentLocationTrackingManager?.removeTrackingLocationListener(listener)
+    fun removeTrackingLocationListener(listener: ITrackingLocationListener) {
+        trackingLocationListeners.remove(listener)
     }
 
     /**
      * Clears all registered tracking location interfaces.
      */
     fun clearAllTrackingLocationListeners() {
-        currentLocationTrackingManager?.clearAllTrackingLocationListeners()
+        trackingLocationListeners.clear()
+    }
+    //#endregion
+
+    //#region Tracking status Listener
+    fun addTrackingStatusListener(listener: ITrackingStatusListener) {
+        if (!trackingStateListeners.contains(listener)) {
+            trackingStateListeners.add(listener)
+        }
     }
 
+    /**
+     * Removes a tracking location interface from receiving location updates.
+     *
+     * @param listener The interface to remove.
+     */
+    fun removeTrackingStatusListener(listener: ITrackingStatusListener) {
+        trackingStateListeners.remove(listener)
+    }
+
+    fun clearAllTrackingStatusListeners() {
+        trackingStateListeners.clear()
+    }
+    //#endregion
+
+//    //#region Tracking Status Listener
+//    fun addTrackingStatusListener(listener: ITrackingStatusListener) {
+//        currentLocationTrackingManager?.addTrackingStatusListener(listener)
+//    }
+//
+//    /**
+//     * Removes a tracking location interface from receiving location updates.
+//     *
+//     * @param listener The interface to remove.
+//     */
+//    fun removeTrackingStatusListener(listener: ITrackingStatusListener) {
+//        currentLocationTrackingManager?.removeTrackingStatusListener(listener)
+//    }
+//
+//    fun clearAllTrackingStatusListeners() {
+//        currentLocationTrackingManager?.clearAllTrackingLocationListeners()
+//    }
+//    //#endregion
+//
+//    //#region Tracking Location Listener
+//    fun addTrackingLocationListener(listener: ITrackingLocationListener) {
+//        currentLocationTrackingManager?.addTrackingLocationListener(listener)
+//    }
+//
+//    /**
+//     * Removes a tracking location interface from receiving location updates.
+//     *
+//     * @param listener The interface to remove.
+//     */
+//    fun removeTrackingLocationListener(listener: ITrackingLocationListener) {
+//        currentLocationTrackingManager?.removeTrackingLocationListener(listener)
+//    }
+//
+//    fun clearAllTrackingLocationListeners() {
+//        currentLocationTrackingManager?.clearAllTrackingLocationListeners()
+//    }
+//    //#endregion
+
+    //#region Tracking Actions Listener
+    override fun onStartTracking(): Boolean {
+        try {
+            val result = currentLocationTrackingManager?.onStartTracking() ?: false
+            return result
+        } catch (ex: Exception) {
+//
+        }
+        return false
+    }
+
+    override fun onResumeTracking(): Boolean {
+        return currentLocationTrackingManager?.onResumeTracking() ?: false
+    }
+
+    override fun onPauseTracking(): Boolean {
+        return currentLocationTrackingManager?.onPauseTracking() ?: false
+    }
+
+    override fun onStopTracking(): Boolean {
+        return currentLocationTrackingManager?.onStopTracking() ?: false
+    }
+
+    //#endregion
 
 }

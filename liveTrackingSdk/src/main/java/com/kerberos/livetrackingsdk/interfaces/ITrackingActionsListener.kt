@@ -1,6 +1,6 @@
 package com.kerberos.livetrackingsdk.interfaces
 
-interface ITrackingActionsInterface {
+interface ITrackingActionsListener {
     fun onStartTracking(): Boolean
 
     fun onResumeTracking(): Boolean

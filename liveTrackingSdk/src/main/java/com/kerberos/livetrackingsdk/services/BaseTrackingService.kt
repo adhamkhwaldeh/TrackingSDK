@@ -1,5 +1,6 @@
 package com.kerberos.livetrackingsdk.services
 
+import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.Notification
@@ -20,16 +21,16 @@ import com.kerberos.livetrackingsdk.ITrackingService
 import com.kerberos.livetrackingsdk.enums.TrackingState
 import com.kerberos.livetrackingsdk.exceptions.DefaultNotificationConfigurationNotImplementedException
 import com.kerberos.livetrackingsdk.interfaces.IServiceExposeWithBinder
-import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
-import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
+import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.livetrackingsdk.models.DefaultNotificationConfiguration
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber
 
 @DelicateCoroutinesApi
-abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
-    ITrackingLocationInterface {
+abstract class BaseTrackingService : Service(), ITrackingActionsListener,
+    ITrackingLocationListener {
 
     //#region customized properties and functions
     abstract val serviceClassForRestart: Class<out Service>
@@ -76,7 +77,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
             TrackingState.IDLE -> {
                 builder.addAction(
                     createAction(
-                        android.R.drawable.ic_media_play,
+                        R.drawable.ic_media_play,
                         "Start",
                         ACTION_START_TRACKING,
                         REQUEST_CODE_START
@@ -87,7 +88,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
             TrackingState.STARTED -> {
                 builder.addAction(
                     createAction(
-                        android.R.drawable.ic_media_pause,
+                        R.drawable.ic_media_pause,
                         "Pause",
                         ACTION_PAUSE_TRACKING,
                         REQUEST_CODE_PAUSE
@@ -96,7 +97,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
                 // Optionally add a stop action
                 builder.addAction(
                     createAction(
-                        android.R.drawable.ic_notification_clear_all,
+                        R.drawable.ic_notification_clear_all,
                         "Stop",
                         ACTION_STOP_TRACKING,
                         REQUEST_CODE_STOP
@@ -107,7 +108,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
             TrackingState.PAUSED -> {
                 builder.addAction(
                     createAction(
-                        android.R.drawable.ic_media_pause,
+                        R.drawable.ic_media_pause,
                         "Resume",
                         ACTION_RESUME_TRACKING,
                         REQUEST_CODE_RESUME
@@ -115,12 +116,16 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
                 )
                 builder.addAction(
                     createAction(
-                        android.R.drawable.ic_notification_clear_all,
+                        R.drawable.ic_notification_clear_all,
                         "Stop",
                         ACTION_STOP_TRACKING,
                         REQUEST_CODE_STOP
                     )
                 )
+            }
+
+            TrackingState.STOPPED -> {
+
             }
         }
 
@@ -306,13 +311,15 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
             ACTION_STOP_TRACKING -> {
                 Timber.d("Tracking STOPPED")
                 try {
-                    wakeLock?.let {
-                        if (it.isHeld) {
-                            it.release()
+                    if (this@BaseTrackingService.onStopTracking()) {
+                        wakeLock?.let {
+                            if (it.isHeld) {
+                                it.release()
+                            }
                         }
+                        stopForeground(true)
+                        stopSelf()
                     }
-                    stopForeground(true)
-                    stopSelf()
                 } catch (e: Exception) {
                     Timber.d("Service stopped without being started: ${e.message}")
                 }
@@ -334,9 +341,9 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
     override fun onCreate() {
         super.onCreate()
 
-        if (locationTrackingManager.onStartTracking()) {
-            updateNotification()
-        }
+//        if (locationTrackingManager.onStartTracking()) {
+//            updateNotification()
+//        }
 
         locationTrackingManager.addTrackingLocationListener(listener = this)
 
@@ -359,7 +366,6 @@ abstract class BaseTrackingService : Service(), ITrackingActionsInterface,
                         acquire()
                     }
             }
-
 
     }
 

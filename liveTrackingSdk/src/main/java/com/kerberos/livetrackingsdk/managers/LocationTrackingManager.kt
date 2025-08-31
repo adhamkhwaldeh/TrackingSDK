@@ -14,16 +14,19 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.kerberos.livetrackingsdk.dataStore.SdkPreferencesManager
-import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationInterface
-import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsInterface
+import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
+import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
 import com.kerberos.livetrackingsdk.enums.TrackingState
 import com.kerberos.livetrackingsdk.exceptions.GpsNotEnabledException
 import com.kerberos.livetrackingsdk.exceptions.PermissionNotGrantedException
 import com.kerberos.livetrackingsdk.helpers.PermissionsHelper
+import com.kerberos.livetrackingsdk.interfaces.ITrackingStatusListener
+import timber.log.Timber
+import kotlin.properties.Delegates
 
 class LocationTrackingManager(
     val context: Context,
-) : ITrackingActionsInterface {
+) : ITrackingActionsListener {
 
     private val fusedClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
@@ -67,20 +70,23 @@ class LocationTrackingManager(
 //                .build()
         }
 
-    private val trackingLocationInterfaces: MutableList<ITrackingLocationInterface> =
+    private var trackingLocationListeners: MutableList<ITrackingLocationListener> =
+        mutableListOf()
+
+    var trackingStateListeners: MutableList<ITrackingStatusListener> =
         mutableListOf()
 
     private val callback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             val location = result.lastLocation
-            trackingLocationInterfaces.forEach { trackingLocationInterface ->
+            trackingLocationListeners.forEach { trackingLocationInterface ->
                 trackingLocationInterface.onLocationUpdated(location)
             }
         }
 
         override fun onLocationAvailability(availability: LocationAvailability) {
             if (!availability.isLocationAvailable) {
-                trackingLocationInterfaces.toList().forEach { trackingLocationInterface ->
+                trackingLocationListeners.toList().forEach { trackingLocationInterface ->
                     val gpsValue = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                     if (!gpsValue) {
                         trackingLocationInterface.onLocationUpdateFailed(GpsNotEnabledException())
@@ -99,40 +105,58 @@ class LocationTrackingManager(
         }
     }
 
-    private var currentTrackingState: TrackingState = TrackingState.IDLE
+    private var currentTrackingState: TrackingState by Delegates.observable(TrackingState.IDLE) { property, oldValue, newValue ->
+        Timber.d(
+            "LocationTrackingManager",
+            "TrackingState changed from $oldValue to $newValue (property: ${property.name})"
+        )
+        // --- Actions to take on state change ---
+
+        // Example: Notify external listeners about state change
+        trackingStateListeners.toList().forEach { it.onTrackingStateChanged(newValue) }
+
+        // Example: Update notification if this manager handles it
+        // if (newValue == TrackingState.STARTED || newValue == TrackingState.PAUSED) {
+        //     updateNotification() // You'd need a method to update/show notification
+        // } else if (newValue == TrackingState.IDLE || newValue == TrackingState.STOPPED) {
+        //     removeNotification()
+        // }
+
+        // Example: Specific logic for transitions
+        when (newValue) {
+            TrackingState.STARTED -> {
+                // Logic specific to entering STARTED state
+            }
+
+            TrackingState.PAUSED -> {
+                // Logic specific to entering PAUSED state
+            }
+            // ... other states
+            else -> {}
+        }
+    }
 
     val trackingState: TrackingState
         get() {
             return currentTrackingState
         }
 
-    /**
-     * Adds a tracking location interface to receive location updates.
-     *
-     * @param listener The interface to add.
-     */
-    fun addTrackingLocationListener(listener: ITrackingLocationInterface) {
-        if (!trackingLocationInterfaces.contains(listener)) {
-            trackingLocationInterfaces.add(listener)
+    fun addTrackingLocationListener(listeners: MutableList<ITrackingLocationListener>) {
+        trackingLocationListeners.forEach { listener ->
+            if (!listeners.contains(listener)) {
+                listeners.add(listener)
+            }
+        }
+        trackingLocationListeners = listeners
+    }
+
+    fun addTrackingLocationListener(listener: ITrackingLocationListener) {
+        if (!trackingLocationListeners.contains(listener)) {
+            trackingLocationListeners.add(listener)
         }
     }
 
-    /**
-     * Removes a tracking location interface from receiving location updates.
-     *
-     * @param listener The interface to remove.
-     */
-    fun removeTrackingLocationListener(listener: ITrackingLocationInterface) {
-        trackingLocationInterfaces.remove(listener)
-    }
-
-    /**
-     * Clears all registered tracking location interfaces.
-     */
-    fun clearAllTrackingLocationListeners() {
-        trackingLocationInterfaces.clear()
-    }
-
+    //#region Tracking actions Listener
     override fun onStartTracking(): Boolean {
         if (!(ActivityCompat.checkSelfPermission(
                 context,
@@ -145,7 +169,7 @@ class LocationTrackingManager(
             fusedClient.requestLocationUpdates(request, callback, Looper.getMainLooper())
             currentTrackingState = TrackingState.STARTED
         } else {
-            trackingLocationInterfaces.forEach { trackingLocationInterface ->
+            trackingLocationListeners.forEach { trackingLocationInterface ->
                 trackingLocationInterface.onLocationUpdateFailed(PermissionNotGrantedException())
             }
             return false
@@ -164,10 +188,12 @@ class LocationTrackingManager(
     }
 
     override fun onStopTracking(): Boolean {
-        currentTrackingState = TrackingState.IDLE
+        currentTrackingState = TrackingState.STOPPED
         fusedClient.removeLocationUpdates(callback)
         return true
     }
+    //#endregion
+
     /**
      * Invalidates the current configuration by stopping and restarting the tracking.
      * This is useful when settings have changed and you want to apply the new configuration.

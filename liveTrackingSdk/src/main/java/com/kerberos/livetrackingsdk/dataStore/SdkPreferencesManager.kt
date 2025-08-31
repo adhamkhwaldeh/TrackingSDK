@@ -21,7 +21,7 @@ class SdkPreferencesManager(context: Context) {
     companion object {
         private const val PREFS_NAME = "kerberos_sdk_settings_prefs"
         const val DEFAULT_LOCATION_UPDATE_INTERVAL = 5000L // 5 seconds
-        const val DEFAULT_LOCATION_UPDATE_DISTANCE = 25f // 5 seconds
+        const val DEFAULT_MIN_DISTANCE_METERS = 25f // 5 seconds
 
 
         const val DEFAULT_BACKGROUND_TRACKING_TOGGLE = true
@@ -42,7 +42,7 @@ class SdkPreferencesManager(context: Context) {
         )
         val minDistanceMeters = sharedPreferences.getFloat(
             PreferencesKeys.LOCATION_UPDATE_DISTANCE,
-            DEFAULT_LOCATION_UPDATE_DISTANCE
+            DEFAULT_MIN_DISTANCE_METERS
         )
         val backgroundToggle = sharedPreferences.getBoolean(
             PreferencesKeys.BACKGROUND_TRACKING_TOGGLE,

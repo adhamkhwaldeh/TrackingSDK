@@ -1,24 +1,26 @@
 package com.kerberos.livetrackingsdk.trackingManagers
 
 import android.content.Context
+import com.kerberos.livetrackingsdk.enums.LiveTrackingMode
+import com.kerberos.livetrackingsdk.interfaces.ITrackingSdkModeStatusListener
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 
 
 class ForegroundTrackingManager(
-    context: Context
-) : BaseTrackingManager(context) {
+    context: Context,
+    trackingSdkModeStatusListener: ITrackingSdkModeStatusListener
+) : BaseTrackingManager(context, trackingSdkModeStatusListener) {
 
     private val locationTrackingManager: LocationTrackingManager by lazy {
         LocationTrackingManager(context)
     }
 
-    override val locationManager: LocationTrackingManager?
-        get() {
-            return locationTrackingManager
-        }
-
     //#region SDK actions
     override fun initializeTrackingManager(): Boolean {
+        trackingSdkModeStatusListener.onTrackingSDKModeInitialized(
+            locationTrackingManager,
+            LiveTrackingMode.FOREGROUND_SERVICE
+        )
         return true
     }
 
@@ -27,22 +29,5 @@ class ForegroundTrackingManager(
     }
     //#endregion
 
-    //#region actions
-    override fun onStartTracking(): Boolean {
-        return locationTrackingManager.onStartTracking()
-    }
-
-    override fun onResumeTracking(): Boolean {
-        return locationTrackingManager.onResumeTracking()
-    }
-
-    override fun onPauseTracking(): Boolean {
-        return locationTrackingManager.onPauseTracking()
-    }
-
-    override fun onStopTracking(): Boolean {
-        return locationTrackingManager.onStopTracking()
-    }
-    //#endregion
 
 }

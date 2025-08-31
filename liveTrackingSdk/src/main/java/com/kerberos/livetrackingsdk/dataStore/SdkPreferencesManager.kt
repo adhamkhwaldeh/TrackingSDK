@@ -76,6 +76,7 @@ class SdkPreferencesManager(context: Context) {
     fun updateAllSettings(newSettings: SdkSettings) {
         sharedPreferences.edit {
             putLong(PreferencesKeys.LOCATION_UPDATE_INTERVAL, newSettings.locationUpdateInterval)
+            putFloat(PreferencesKeys.LOCATION_UPDATE_DISTANCE, newSettings.minDistanceMeters)
             putBoolean(
                 PreferencesKeys.BACKGROUND_TRACKING_TOGGLE,
                 newSettings.backgroundTrackingToggle

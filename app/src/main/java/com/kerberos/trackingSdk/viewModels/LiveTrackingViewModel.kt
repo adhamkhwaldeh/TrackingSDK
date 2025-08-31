@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LiveTrackingViewModel(application: Application) : AndroidViewModel(application),
+class LiveTrackingViewModel(
+    application: Application,
+    private val appPrefsStorage: com.kerberos.trackingSdk.dataStore.AppPrefsStorage
+) : AndroidViewModel(application),
     ITrackingStatusListener, ITrackingLocationListener {
 
     private val _trackingState = MutableStateFlow<TrackingState>(TrackingState.STOPPED)
@@ -28,6 +31,14 @@ class LiveTrackingViewModel(application: Application) : AndroidViewModel(applica
         liveTrackingManager.addTrackingStatusListener(this)
         liveTrackingManager.addTrackingLocationListener(this)
         liveTrackingManager.currentTrackingManager.initializeTrackingManager()
+
+        viewModelScope.launch {
+            appPrefsStorage.trackSDKConfiguration.collect { settings ->
+                settings?.let {
+                    liveTrackingManager.changeSdkSettings(it)
+                }
+            }
+        }
     }
 
     fun startTracking() {

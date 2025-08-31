@@ -41,6 +41,14 @@ fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = uiState.minDistance,
+            onValueChange = viewModel::onMinDistanceChanged,
+            label = { Text("Minimum Distance (meters)") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

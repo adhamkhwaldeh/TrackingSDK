@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -42,7 +41,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TripScreen(
     viewModel: TripViewModel = koinViewModel(),
-    tripTrackViewModel: TripTrackViewModel = koinViewModel()
 ) {
     val lazyTripItems = viewModel.tripList.collectAsLazyPagingItems()
     var showMenu by remember { mutableStateOf(false) }
@@ -86,10 +84,6 @@ fun TripScreen(
             }
         }
     }
-
-    val tripTracks by tripTrackViewModel.tripTracks.collectAsState()
-
-    val tripStatus by tripTrackViewModel.tripStatus.collectAsState()
 
     Scaffold(
         topBar = {
@@ -159,17 +153,6 @@ fun TripScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TripControls(
-                tripStatus = tripStatus,
-                onStart = tripTrackViewModel::startTrip,
-                onPause = tripTrackViewModel::pauseTrip,
-                onResume = tripTrackViewModel::resumeTrip,
-                onStop = tripTrackViewModel::stopTrip,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            )
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

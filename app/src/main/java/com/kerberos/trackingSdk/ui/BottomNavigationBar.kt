@@ -18,8 +18,8 @@ import androidx.navigation.NavController
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("List", "Map", "Settings")
-    val icons = listOf(Icons.AutoMirrored.Filled.List, Icons.Filled.Place, Icons.Filled.Settings)
+    val items = listOf("Map", "List", "Settings")
+    val icons = listOf(Icons.Filled.Place, Icons.AutoMirrored.Filled.List, Icons.Filled.Settings)
 
     NavigationBar {
         items.forEachIndexed { index, item ->

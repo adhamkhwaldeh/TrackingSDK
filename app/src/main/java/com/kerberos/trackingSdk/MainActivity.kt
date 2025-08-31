@@ -97,8 +97,8 @@ fun MainScreen() {
             startDestination = "List",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("List") { TripScreen() }
             composable("Map") { TripMapScreen() }
+            composable("List") { TripScreen() }
             composable("Settings") { SettingsScreen() }
         }
     }

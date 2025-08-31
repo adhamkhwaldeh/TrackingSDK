@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val appPrefsStorage: com.kerberos.trackingSdk.dataStore.AppPrefsStorage) :
+class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
     ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())

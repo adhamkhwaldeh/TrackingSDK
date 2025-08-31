@@ -34,7 +34,16 @@ class CsvTripImporterExporter : TripImporter, TripExporter {
 
     override suspend fun export(trips: List<TripModel>, outputStream: OutputStream) {
         val writer = CSVWriter(OutputStreamWriter(outputStream))
-        writer.writeNext(arrayOf("id", "startTime", "endTime", "tripDuration", "totalDistance", "isActive"))
+        writer.writeNext(
+            arrayOf(
+                "id",
+                "startTime",
+                "endTime",
+                "tripDuration",
+                "totalDistance",
+                "isActive"
+            )
+        )
         trips.forEach {
             writer.writeNext(
                 arrayOf(

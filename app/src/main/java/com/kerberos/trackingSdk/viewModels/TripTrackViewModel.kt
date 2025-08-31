@@ -3,6 +3,7 @@ package com.kerberos.trackingSdk.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kerberos.trackingSdk.orm.TripTrack
+import com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,7 @@ enum class TripStatus {
     PAUSED
 }
 
-class TripTrackViewModel(private val tripTrackRepository: com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository) :
+class TripTrackViewModel(private val tripTrackRepository: TripTrackRepository) :
     ViewModel() {
 
     private val _tripTracks = MutableStateFlow<List<TripTrack>>(emptyList())

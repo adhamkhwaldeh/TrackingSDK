@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
+fun TripScreen(
+    viewModel: TripViewModel = koinViewModel(),
+    tripTrackViewModel: TripTrackViewModel = koinViewModel()
+) {
     val lazyTripItems = viewModel.tripList.collectAsLazyPagingItems()
     var showMenu by remember { mutableStateOf(false) }
 
@@ -81,6 +86,10 @@ fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
             }
         }
     }
+
+    val tripTracks by tripTrackViewModel.tripTracks.collectAsState()
+
+    val tripStatus by tripTrackViewModel.tripStatus.collectAsState()
 
     Scaffold(
         topBar = {
@@ -145,9 +154,22 @@ fun TripScreen(viewModel: TripViewModel = koinViewModel()) {
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            TripControls(
+                tripStatus = tripStatus,
+                onStart = tripTrackViewModel::startTrip,
+                onPause = tripTrackViewModel::pauseTrip,
+                onResume = tripTrackViewModel::resumeTrip,
+                onStop = tripTrackViewModel::stopTrip,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            )
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

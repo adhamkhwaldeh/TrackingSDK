@@ -341,10 +341,6 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
     override fun onCreate() {
         super.onCreate()
 
-//        if (locationTrackingManager.onStartTracking()) {
-//            updateNotification()
-//        }
-
         locationTrackingManager.addTrackingLocationListener(listener = this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

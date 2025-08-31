@@ -58,14 +58,14 @@ class TripViewModel constructor(
         }
     }
 
-    fun updateTrip(tripModel: com.kerberos.trackingSdk.models.TripModel) {
+    fun updateTrip(tripModel: TripModel) {
         viewModelScope.launch {
             val useCase = tripUseCaseFactory.createUpdateUseCase()
             useCase.execute(tripModel.toTrip())
         }
     }
 
-    fun deleteTrip(tripModel: com.kerberos.trackingSdk.models.TripModel) {
+    fun deleteTrip(tripModel: TripModel) {
         viewModelScope.launch {
             val useCase = tripUseCaseFactory.createDeleteUseCase()
             useCase.execute(tripModel.toTrip())

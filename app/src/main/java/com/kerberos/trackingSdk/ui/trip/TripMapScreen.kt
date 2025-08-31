@@ -50,7 +50,6 @@ fun TripMapScreen(viewModel: TripTrackViewModel = koinViewModel()) {
                 Polyline(points = tripTracks.map { LatLng(it.latitude, it.longitude) })
             }
         }
-
         TripControls(
             tripStatus = tripStatus,
             onStart = viewModel::startTrip,

@@ -2,6 +2,7 @@ package com.kerberos.trackingSdk.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kerberos.livetrackingsdk.LiveTrackingManager
 import com.kerberos.livetrackingsdk.models.SdkSettings
 import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,14 +11,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val appPrefsStorage: AppPrefsStorage) :
-    ViewModel() {
+class SettingsViewModel(
+    private val appPrefsStorage: AppPrefsStorage,
+    private val liveTrackingManager: LiveTrackingManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
         loadSettings()
+        viewModelScope.launch {
+            appPrefsStorage.trackSDKConfiguration.collect { settings ->
+                settings?.let {
+                    liveTrackingManager.changeSdkSettings(it)
+                }
+            }
+        }
     }
 
     private fun loadSettings() {

@@ -52,7 +52,6 @@ class BackgroundTrackingManager(
     }
 
     //#region SDK actions
-
     override fun initializeTrackingManager(): Boolean {
         val anIntent = Intent(context, serviceClass)
         context.bindService(anIntent, svcConn, Context.BIND_AUTO_CREATE)
@@ -67,6 +66,7 @@ class BackgroundTrackingManager(
     override fun destroyTrackingManager(): Boolean {
         try {
             context.unbindService(svcConn)
+            context.stopService(Intent(context, serviceClass))
         } catch (e: java.lang.Exception) {
 
         }
@@ -74,5 +74,42 @@ class BackgroundTrackingManager(
     }
     //#endregion
 
+    //#region tracking functions
+    override fun onStartTracking(): Boolean {
+        try {
+            return itsTrackService?.startTracking() ?: false
+        } catch (ex: Exception) {
+
+        }
+        return true
+    }
+
+    override fun onResumeTracking(): Boolean {
+        try {
+            return itsTrackService?.resumeTracking() ?: false
+        } catch (ex: Exception) {
+
+        }
+        return true
+    }
+
+    override fun onPauseTracking(): Boolean {
+        try {
+            return itsTrackService?.pauseTracking() ?: false
+        } catch (ex: Exception) {
+
+        }
+        return true
+    }
+
+    override fun onStopTracking(): Boolean {
+        try {
+            return itsTrackService?.stopTracking() ?: false
+        } catch (ex: Exception) {
+
+        }
+        return true
+    }
+    //#endregion
 
 }

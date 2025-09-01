@@ -3,6 +3,7 @@ package com.kerberos.trackingSdk.di
 import android.app.Application
 import com.kerberos.trackingSdk.repositories.repositories.TripPagingRepository
 import com.google.gson.Gson
+import com.kerberos.livetrackingsdk.LiveTrackingManager
 import com.kerberos.trackingSdk.factories.TripUseCaseFactory
 import com.kerberos.trackingSdk.orm.LiveTrackingDatabase
 import com.kerberos.trackingSdk.repositories.repositories.TripPagingRepositoryImpl
@@ -50,13 +51,14 @@ object KoinStarter {
 
     private val managerModule = module {
         single { LocationTrackingManager(get()) }
+        single { LiveTrackingManager.Builder(get()).build() }
     }
 
     private val viewModelModule = module {
         viewModel { TripTrackViewModel(get(), get()) }
         viewModel { TripViewModel(get(), get(), get()) }
-        viewModel { SettingsViewModel(get()) }
-        viewModel { LiveTrackingViewModel(get(), get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get()) }
+        viewModel { LiveTrackingViewModel(get(), get(), get()) }
 
     }
 

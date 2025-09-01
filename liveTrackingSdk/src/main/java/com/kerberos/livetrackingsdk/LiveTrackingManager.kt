@@ -19,10 +19,9 @@ import com.kerberos.livetrackingsdk.trackingManagers.ForegroundTrackingManager
 class LiveTrackingManager private constructor(
     val context: Context,
     backgroundService: Class<out BaseTrackingService> = DefaultTrackingService::class.java,
-    val liveTrackingMode: LiveTrackingMode = LiveTrackingMode.FOREGROUND_SERVICE,
+    var liveTrackingMode: LiveTrackingMode = LiveTrackingMode.FOREGROUND_SERVICE,
     val sdkPreferencesManager: SdkPreferencesManager,
-    private val trackingLocationListener: MutableList<ITrackingStatusListener> =
-        mutableListOf()
+    private val trackingLocationListener: MutableList<ITrackingStatusListener> = mutableListOf()
 ) : ITrackingActionsListener, ITrackingSdkModeStatusListener {
 
     // Builder Class
@@ -126,11 +125,9 @@ class LiveTrackingManager private constructor(
         BackgroundTrackingManager(context, backgroundService, this)
     )
 
-    val trackingLocationListeners: MutableList<ITrackingLocationListener> =
-        mutableListOf()
+    val trackingLocationListeners: MutableList<ITrackingLocationListener> = mutableListOf()
 
-    val trackingStateListeners: MutableList<ITrackingStatusListener> =
-        mutableListOf()
+    val trackingStateListeners: MutableList<ITrackingStatusListener> = mutableListOf()
 
     val currentTrackingManager: BaseTrackingManager
         get() {
@@ -143,8 +140,7 @@ class LiveTrackingManager private constructor(
     var currentLocationTrackingManager: LocationTrackingManager? = null
 
     override fun onTrackingSDKModeInitialized(
-        locationTrackingManager: LocationTrackingManager,
-        liveTrackingMode: LiveTrackingMode
+        locationTrackingManager: LocationTrackingManager, liveTrackingMode: LiveTrackingMode
     ) {
         locationTrackingManager.addTrackingLocationListener(trackingLocationListeners)
         locationTrackingManager.trackingStateListeners = trackingStateListeners
@@ -155,14 +151,19 @@ class LiveTrackingManager private constructor(
 
     fun changeTrackingMode(newMode: LiveTrackingMode): Boolean {
         if (newMode == liveTrackingMode) return true
-        val stopResult = currentLocationTrackingManager?.onStopTracking() ?: false
+        val stopResult = currentTrackingManager.destroyTrackingManager() ?: false
         if (!stopResult) return false
+        liveTrackingMode = newMode
         val initResult = currentTrackingManager.initializeTrackingManager()
         if (!initResult) return false
         return true
     }
 
     fun changeSdkSettings(sdkSettings: SdkSettings): Boolean {
+        changeTrackingMode(
+            if (sdkSettings.backgroundTrackingToggle)
+                LiveTrackingMode.BACKGROUND_SERVICE else LiveTrackingMode.FOREGROUND_SERVICE
+        )
         sdkPreferencesManager.updateAllSettings(sdkSettings)
         return currentLocationTrackingManager?.invalidateConfiguration() ?: false
     }
@@ -259,7 +260,7 @@ class LiveTrackingManager private constructor(
     //#region Tracking Actions Listener
     override fun onStartTracking(): Boolean {
         try {
-            val result = currentLocationTrackingManager?.onStartTracking() ?: false
+            val result = currentTrackingManager?.onStartTracking() ?: false
             return result
         } catch (ex: Exception) {
 
@@ -269,7 +270,7 @@ class LiveTrackingManager private constructor(
 
     override fun onResumeTracking(): Boolean {
         try {
-            val result = currentLocationTrackingManager?.onResumeTracking() ?: false
+            val result = currentTrackingManager?.onResumeTracking() ?: false
             return result
         } catch (ex: Exception) {
 
@@ -279,7 +280,7 @@ class LiveTrackingManager private constructor(
 
     override fun onPauseTracking(): Boolean {
         try {
-            val result = currentLocationTrackingManager?.onPauseTracking() ?: false
+            val result = currentTrackingManager?.onPauseTracking() ?: false
             return result
         } catch (ex: Exception) {
 
@@ -289,7 +290,7 @@ class LiveTrackingManager private constructor(
 
     override fun onStopTracking(): Boolean {
         try {
-            val result = currentLocationTrackingManager?.onStopTracking() ?: false
+            val result = currentTrackingManager?.onStopTracking() ?: false
             return result
         } catch (ex: Exception) {
 

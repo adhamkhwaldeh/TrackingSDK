@@ -30,4 +30,41 @@ class ForegroundTrackingManager(
     //#endregion
 
 
+    //#region tracking functions
+    override fun onStartTracking(): Boolean {
+        try {
+            return locationTrackingManager.onStartTracking()
+        } catch (ex: Exception) {
+
+        }
+        return false
+    }
+
+    override fun onResumeTracking(): Boolean {
+        try {
+            return locationTrackingManager.onResumeTracking()
+        } catch (ex: Exception) {
+
+        }
+        return false
+    }
+
+    override fun onPauseTracking(): Boolean {
+        try {
+            return locationTrackingManager.onPauseTracking()
+        } catch (ex: Exception) {
+
+        }
+        return false
+    }
+
+    override fun onStopTracking(): Boolean {
+        try {
+            return locationTrackingManager.onStopTracking()
+        } catch (ex: Exception) {
+
+        }
+        return false
+    }
+    //#endregion
 }

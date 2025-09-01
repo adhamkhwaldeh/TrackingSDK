@@ -19,9 +19,8 @@ import kotlinx.coroutines.flow.onStart
 
 class LiveTrackingViewModel(
     application: Application,
-    private val addNewTripUseCase: AddNewTripUseCase,
     private val addCurrentTripTrackUseCase: AddCurrentTripTrackUseCase,
-    private val appPrefsStorage: AppPrefsStorage
+    private val liveTrackingManager: LiveTrackingManager
 ) : AndroidViewModel(application),
     ITrackingStatusListener, ITrackingLocationListener {
 
@@ -31,32 +30,16 @@ class LiveTrackingViewModel(
     private val _locationState = MutableStateFlow<Location?>(null)
     val locationState: StateFlow<Location?> = _locationState
 
-    private val liveTrackingManager: LiveTrackingManager = LiveTrackingManager.Builder(application)
-        .build()
-
     init {
         liveTrackingManager.addTrackingStatusListener(this)
         liveTrackingManager.addTrackingLocationListener(this)
         liveTrackingManager.currentTrackingManager.initializeTrackingManager()
 
-        viewModelScope.launch {
-            appPrefsStorage.trackSDKConfiguration.collect { settings ->
-                settings?.let {
-                    liveTrackingManager.changeSdkSettings(it)
-                }
-            }
-        }
+
     }
 
     fun startTracking() {
-        viewModelScope.launch {
-            addNewTripUseCase(Unit)
-                .onStart { }
-                .catch { }
-                .collect {
-                    liveTrackingManager.onStartTracking()
-                }
-        }
+        liveTrackingManager.onStartTracking()
     }
 
     fun stopTracking() {

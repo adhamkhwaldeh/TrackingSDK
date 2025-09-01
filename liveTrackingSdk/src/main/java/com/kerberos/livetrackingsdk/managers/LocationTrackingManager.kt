@@ -201,7 +201,10 @@ class LocationTrackingManager(
      * @return True if both stopping and starting tracking were successful, false otherwise.
      */
     fun invalidateConfiguration(): Boolean {
-        return onStopTracking() && onStartTracking()
+        if (trackingState == TrackingState.STARTED) {
+            return onStopTracking() && onStartTracking()
+        }
+        return true
     }
 
 }

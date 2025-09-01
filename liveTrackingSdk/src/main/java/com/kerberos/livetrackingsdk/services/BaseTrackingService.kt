@@ -32,7 +32,7 @@ import timber.log.Timber
 abstract class BaseTrackingService : Service(), ITrackingActionsListener,
     ITrackingLocationListener {
 
-    //#region customized properties and functions
+    //#region Customized properties and functions
     abstract val serviceClassForRestart: Class<out Service>
         get
 
@@ -253,19 +253,55 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
 
     //#region tracking functions
     override fun onStartTracking(): Boolean {
-        return locationTrackingManager.onStartTracking()
+        try {
+            val result = locationTrackingManager.onStartTracking()
+            if (result) {
+                updateNotification()
+            }
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
 
     override fun onResumeTracking(): Boolean {
-        return locationTrackingManager.onResumeTracking()
+        try {
+            val result = locationTrackingManager.onResumeTracking()
+            if (result) {
+                updateNotification()
+            }
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
 
     override fun onPauseTracking(): Boolean {
-        return locationTrackingManager.onPauseTracking()
+        try {
+            val result = locationTrackingManager.onPauseTracking()
+            if (result) {
+                updateNotification()
+            }
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
 
     override fun onStopTracking(): Boolean {
-        return locationTrackingManager.onStopTracking()
+        try {
+            val result = locationTrackingManager.onStopTracking()
+            if (result) {
+                updateNotification()
+            }
+            return result
+        } catch (ex: Exception) {
+
+        }
+        return false
     }
     //#endregion
 

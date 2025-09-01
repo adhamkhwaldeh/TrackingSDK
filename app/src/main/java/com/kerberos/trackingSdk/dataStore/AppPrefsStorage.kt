@@ -16,7 +16,7 @@ class AppPrefsStorage(var context: Context) : PreferenceStorage {
 
     private val Context.dataStore by preferencesDataStore("AppPrefStorage")
 
-    //region Logged user
+    //region sdk settings
     override val trackSDKConfiguration: Flow<SdkSettings?>
         get() = context.dataStore.getValueAsFlow(PreferencesKeys.TRACK_SDK_CONFIGURATION, "")
             .map { preferences ->
@@ -26,10 +26,10 @@ class AppPrefsStorage(var context: Context) : PreferenceStorage {
                 ) else null
             }
 
-    override suspend fun setTrackSDKConfiguration(loggedUser: SdkSettings) {
+    override suspend fun setTrackSDKConfiguration(sdkSettings: SdkSettings) {
         context.dataStore.setValue(
             PreferencesKeys.TRACK_SDK_CONFIGURATION,
-            Gson().toJson(loggedUser)
+            Gson().toJson(sdkSettings)
         )
     }
 

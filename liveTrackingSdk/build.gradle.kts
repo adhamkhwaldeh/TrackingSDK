@@ -61,13 +61,10 @@ android {
 jreleaser {
     release {
         github {
-            token.set(System.getenv("JRELEASER_GITHUB_TOKEN") ?: "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")
             enabled.set(false) // 🔴 disable GitHub release
         }
     }
-//    github {
-//        token.set(System.getenv("JRELEASER_GITHUB_TOKEN") ?: "YOUR_TOKEN_HERE")
-//    }
+
     project {
         // Only set version here if you explicitly want to override Gradle's project.version for JReleaser
         // If not, remove the line below or comment it out.

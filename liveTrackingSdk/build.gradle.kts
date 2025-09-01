@@ -77,7 +77,7 @@ jreleaser {
         description = "A Live Tracking SDK for Android."
         longDescription =
             "A longer description of the Live Tracking SDK for Android, detailing its features and benefits."
-        website = "https://github.com/adhamkhwaldeh/TrackingSDK" // Your project's website/repo
+        website = "https://github.com/adhamkhwaldeh/liveTrackingSdk" // Your project's website/repo
         authors = listOf("Adham Khwaldeh <adhamkhwaldeh@gmail.com>")
         license = "Apache-2.0" // SPDX identifier
         version = "1.0.0"
@@ -235,7 +235,7 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
 //                pom {
 //                    name.set("Livetrackingsdk")
 //                    description.set("A description of your library")
-//                    url.set("https://github.com/adhamkhwaldeh/TrackingSDK")
+//                    url.set("https://github.com/adhamkhwaldeh/liveTrackingSdk")
 //
 //                    licenses {
 //                        license {
@@ -251,9 +251,9 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
 //                        }
 //                    }
 //                    scm {
-//                        connection.set("scm:git:git://github.com/adhamkhwaldeh/TrackingSDK.git")
-//                        developerConnection.set("scm:git:ssh://github.com/adhamkhwaldeh/TrackingSDK.git")
-//                        url.set("https://github.com/adhamkhwaldeh/TrackingSDK")
+//                        connection.set("scm:git:git://github.com/adhamkhwaldeh/liveTrackingSdk.git")
+//                        developerConnection.set("scm:git:ssh://github.com/adhamkhwaldeh/liveTrackingSdk.git")
+//                        url.set("https://github.com/adhamkhwaldeh/liveTrackingSdk")
 //                    }
 //                }
 //            }

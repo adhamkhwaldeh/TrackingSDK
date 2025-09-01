@@ -21,7 +21,7 @@ enum class TripStatus {
 
 class TripTrackViewModel(
     private val tripTrackRepository: TripTrackRepository,
-    private val locationTrackingManager: LocationTrackingManager
+//    private val locationTrackingManager: LocationTrackingManager
 ) :
     ViewModel(), ITrackingLocationListener {
 
@@ -60,12 +60,12 @@ class TripTrackViewModel(
     }
 
     fun startLocationUpdates() {
-        locationTrackingManager.addTrackingLocationListener(this)
-        locationTrackingManager.onStartTracking()
+//        locationTrackingManager.addTrackingLocationListener(this)
+//        locationTrackingManager.onStartTracking()
     }
 
     fun stopLocationUpdates() {
-        locationTrackingManager.onStopTracking()
+//        locationTrackingManager.onStopTracking()
     }
 
     override fun onLocationUpdated(location: Location?) {

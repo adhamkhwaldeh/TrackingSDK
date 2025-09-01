@@ -55,6 +55,8 @@ class LiveTrackingManager private constructor(
             this.minDistance = persistedSettings.minDistanceMeters
             this.updateInterval = persistedSettings.locationUpdateInterval
             this.bgTrackingToggle = persistedSettings.backgroundTrackingToggle
+            this.trackingMode =
+                if (persistedSettings.backgroundTrackingToggle) LiveTrackingMode.BACKGROUND_SERVICE else LiveTrackingMode.FOREGROUND_SERVICE
         }
 
 
@@ -137,6 +139,11 @@ class LiveTrackingManager private constructor(
             }
         }
 
+    val sdkSettings: SdkSettings
+        get() {
+            return sdkPreferencesManager.getSettings()
+        }
+
     var currentLocationTrackingManager: LocationTrackingManager? = null
 
     override fun onTrackingSDKModeInitialized(
@@ -153,6 +160,11 @@ class LiveTrackingManager private constructor(
         if (newMode == liveTrackingMode) return true
         val stopResult = currentTrackingManager.destroyTrackingManager() ?: false
         if (!stopResult) return false
+        currentLocationTrackingManager?.resetCurrentTrackStateAfterChangeMode()
+
+//        trackingLocationListener.removeIf{x->}
+//        clearAllTrackingLocationListeners()
+//        clearAllTrackingStatusListeners()
         liveTrackingMode = newMode
         val initResult = currentTrackingManager.initializeTrackingManager()
         if (!initResult) return false
@@ -161,8 +173,7 @@ class LiveTrackingManager private constructor(
 
     fun changeSdkSettings(sdkSettings: SdkSettings): Boolean {
         changeTrackingMode(
-            if (sdkSettings.backgroundTrackingToggle)
-                LiveTrackingMode.BACKGROUND_SERVICE else LiveTrackingMode.FOREGROUND_SERVICE
+            if (sdkSettings.backgroundTrackingToggle) LiveTrackingMode.BACKGROUND_SERVICE else LiveTrackingMode.FOREGROUND_SERVICE
         )
         sdkPreferencesManager.updateAllSettings(sdkSettings)
         return currentLocationTrackingManager?.invalidateConfiguration() ?: false

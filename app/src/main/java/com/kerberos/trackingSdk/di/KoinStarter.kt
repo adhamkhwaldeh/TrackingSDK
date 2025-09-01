@@ -16,6 +16,7 @@ import com.kerberos.trackingSdk.useCases.AddNewTripUseCase
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import com.kerberos.trackingSdk.viewModels.TripViewModel
 import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
+import com.kerberos.trackingSdk.TripBackgroundService
 import com.kerberos.trackingSdk.dataStore.AppPrefsStorage
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -49,13 +50,20 @@ object KoinStarter {
         factory { AddCurrentTripTrackUseCase(get()) }
     }
 
+    private val storageModule = module {
+        single { AppPrefsStorage(get()) }
+    }
+
     private val managerModule = module {
-        single { LocationTrackingManager(get()) }
-        single { LiveTrackingManager.Builder(get()).build() }
+        single {
+            LiveTrackingManager.Builder(get())
+                .setBackgroundService(TripBackgroundService::class.java)
+                .build()
+        }
     }
 
     private val viewModelModule = module {
-        viewModel { TripTrackViewModel(get(), get()) }
+        viewModel { TripTrackViewModel(get()) }
         viewModel { TripViewModel(get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get()) }
         viewModel { LiveTrackingViewModel(get(), get(), get()) }
@@ -80,8 +88,6 @@ object KoinStarter {
     private val serializationModule = module {
         single { Gson() }
     }
-    private val storageModule = module {
-        single { AppPrefsStorage(get()) }
-    }
+
 
 }

@@ -22,8 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
+
 rootProject.name = "Tracking Application"
 include(":app")
 include(":liveTrackingSdk")
-include(":mylibrary")
-include(":tripTrackingCore")

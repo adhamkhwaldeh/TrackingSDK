@@ -31,12 +31,17 @@ class SettingsViewModel(
     }
 
     private fun loadSettings() {
+
         viewModelScope.launch {
             val config = appPrefsStorage.trackSDKConfiguration.first()
+            val settings = liveTrackingManager.sdkSettings
             _uiState.value = SettingsUiState(
-                locationUpdateInterval = config?.locationUpdateInterval?.toString() ?: "10000",
-                backgroundTrackingEnabled = config?.backgroundTrackingToggle ?: false,
-                minDistance = config?.minDistanceMeters?.toString() ?: "25",
+                locationUpdateInterval = config?.locationUpdateInterval?.toString()
+                    ?: settings.locationUpdateInterval.toString(),
+                backgroundTrackingEnabled = config?.backgroundTrackingToggle
+                    ?: settings.backgroundTrackingToggle,
+                minDistance = config?.minDistanceMeters?.toString()
+                    ?: settings.minDistanceMeters.toString(),
                 language = appPrefsStorage.getLanguage() ?: "English",
                 theme = appPrefsStorage.getTheme() ?: "Light"
             )

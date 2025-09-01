@@ -6,9 +6,15 @@ plugins {
     alias(libs.plugins.kotlin.android)
 
     id("org.jetbrains.dokka") version "2.0.0"
-
+//    id("org.jreleaser.gradle.plugin") version "0.1.0"
+    id("org.jreleaser") version "1.19.0"
     id("maven-publish")
+    id("signing")
 }
+// THIS IS THE MOST IMPORTANT PART FOR THIS ERROR
+// Or your intended release version, e.g., "0.1.2"
+group = "io.github.adhamkhwaldeh"
+version = "1.0.0"
 
 android {
     namespace = "com.kerberos.livetrackingsdk"
@@ -16,7 +22,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-
+        version = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -52,27 +58,49 @@ android {
 
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            groupId = "io.github.adhamkhwaldeh"
-            artifactId = "livetrackingsdk"
-            version = "1.0.0"
+jreleaser {
+    release {
+        github {
+            token.set(System.getenv("JRELEASER_GITHUB_TOKEN") ?: "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")
+            enabled.set(false) // 🔴 disable GitHub release
+        }
+    }
+//    github {
+//        token.set(System.getenv("JRELEASER_GITHUB_TOKEN") ?: "YOUR_TOKEN_HERE")
+//    }
+    project {
+        // Only set version here if you explicitly want to override Gradle's project.version for JReleaser
+        // If not, remove the line below or comment it out.
+        // version = "1.0.0"
 
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
+        name = "liveTrackingSdk" // Usually the artifactId
+        description = "A Live Tracking SDK for Android."
+        longDescription =
+            "A longer description of the Live Tracking SDK for Android, detailing its features and benefits."
+        website = "https://github.com/adhamkhwaldeh/TrackingSDK" // Your project's website/repo
+        authors = listOf("Adham Khwaldeh <adhamkhwaldeh@gmail.com>")
+        license = "Apache-2.0" // SPDX identifier
+        version = "1.0.0"
+//        groupId = "io.github.adhamkhwaldeh"
+//        artifactId = "livetrackingsdk"
+//        version = "1.0.0"
+        // java.groupId = "io.github.adhamkhwaldeh" // JReleaser usually infers this from project.group
+        // java.artifactId = "livetrackingsdk" // JReleaser usually infers this
     }
-    repositories {
-        maven {
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = project.findProperty("sonatypeUsername") as String?
-                password = project.findProperty("sonatypePassword") as String?
-            }
-        }
-    }
+//    deploy {
+//        maven {
+//            nexus2 {
+//                register("sonatype") {
+//                    active.set(org.jreleaser.model.Active.ALWAYS)
+//                    url.set("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+//                    snapshotUrl.set("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+//                    username.set(providers.environmentVariable("JRELEASER_SONATYPE_USERNAME"))
+//                    password.set(providers.environmentVariable("JRELEASER_SONATYPE_PASSWORD"))
+//                }
+//            }
+//        }
+//    }
+    // ... other JReleaser configurations (release, signing, packagers, etc.)
 }
 
 dependencies {
@@ -93,41 +121,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx) // Often used with DataStore for coroutine scopes
 
 }
-
-
-//subprojects {
-//    apply plugin: 'org.jetbrains.dokka'
-//}
-
-//dokka {
-//    moduleName.set("WeatherGiniSDK")
-//    dokkaPublications.html {
-//        outputDirectory.set(layout.buildDirectory.dir("dokkaDir"))
-//    }
-//
-//    dokkaSourceSets.main {
-//        // Only set the actual Kotlin/Java dirs once
-//        sourceRoots.from("src/main/java")
-////    dokkaSourceSets.named("main") {
-//        includes.from("IntegrationGuide.md")
-//        skipEmptyPackages.set(true)
-////        includeNonPublic.set(false)
-////        includes.from("IntegrationGuide.md")
-//        sourceLink {
-////            localDirectory.set(file("src/main/java"))
-//            remoteUrl("https://github.com/adhamkhwaldeh/WeatherSdk/tree/main/app/src/main/java")
-//            remoteLineSuffix.set("#L")
-//        }
-//
-//        reportUndocumented.set(true)          // Warn about undocumented public APIs
-//        skipDeprecated.set(true)              // Exclude deprecated elements
-//        suppress.set(false)                   // Include suppressed elements
-//        sourceRoots.from(file("src/main/java"))
-//        sourceRoots.from("src/main/java")
-//        jdkVersion.set(17)
-//    }
-//
-//}
 
 tasks.withType<DokkaTaskPartial>().configureEach { // Use DokkaTaskPartial for module-level config
     moduleName.set("LiveTrackingSdk") // Sets the module name
@@ -229,18 +222,140 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
 //}
 
 
-// If your Dokka version uses `dokkaPublications` directly in the top-level `dokka { }` block
-// (which is less common in recent versions for HTML output directory), it might look like this,
-// but the above `tasks.named<DokkaTask>("dokkaHtml")` is more standard for 1.4+.
-// dokka { // This is the top-level extension, less common for direct output config now
-//     moduleName.set("WeatherGiniSDK")
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            create<MavenPublication>("release") {
+//                from(components["release"])
+//
+//                groupId = "io.github.adhamkhwaldeh"
+//                artifactId = "livetrackingsdk"
+//                version = "1.0.0"
+//
+//                pom {
+//                    name.set("Livetrackingsdk")
+//                    description.set("A description of your library")
+//                    url.set("https://github.com/adhamkhwaldeh/TrackingSDK")
+//
+//                    licenses {
+//                        license {
+//                            name.set("The Apache License, Version 2.0")
+//                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+//                        }
+//                    }
+//                    developers {
+//                        developer {
+//                            id.set("adhamkhwaldeh")
+//                            name.set("adham al khawalda")
+//                            email.set("adhamkhwaldeh@gmail.com")
+//                        }
+//                    }
+//                    scm {
+//                        connection.set("scm:git:git://github.com/adhamkhwaldeh/TrackingSDK.git")
+//                        developerConnection.set("scm:git:ssh://github.com/adhamkhwaldeh/TrackingSDK.git")
+//                        url.set("https://github.com/adhamkhwaldeh/TrackingSDK")
+//                    }
+//                }
+//            }
+//        }
+//
+//        repositories {
+//            maven {
+//                name = "OSSRH"
+////                // Use release or snapshot repo depending on version
+////                val releasesRepoUrl =
+////                    uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+////                val snapshotsRepoUrl =
+////                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+////                url = if (version.toString()
+////                        .endsWith("SNAPSHOT")
+////                ) snapshotsRepoUrl else releasesRepoUrl
+//
+//                val releasesRepoUrl = uri("https://central.sonatype.com/api/v1/publish")
+//                val snapshotsRepoUrl = uri("https://central.sonatype.com/api/v1/publish-snapshots")
+//                url = if (version.toString()
+//                        .endsWith("SNAPSHOT")
+//                ) snapshotsRepoUrl else releasesRepoUrl
+//
+//                credentials {
+//                    username = project.findProperty("sonatypeUsername") as String? ?: ""
+//                    password = project.findProperty("sonatypePassword") as String? ?: ""
+//                }
+//            }
+//        }
+//
+//
+//    }
+//}
 
-//     // This specific structure for publications might be from an older Dokka version
-//     // or a specific plugin. For standard Dokka 1.4+, output is usually configured
-//     // on the task itself (e.g., dokkaHtml).
-//     // publications.named("html") { // Assuming 'html' is the name of the publication
-//     //    this as org.jetbrains.dokka.gradle.DokkaConfiguration.DokkaPublication // Cast if needed for specific properties
-//     //    outputDirectory.set(layout.buildDirectory.dir("dokkaDir"))
-//     // }
-//     // The rest of your sourceSet configuration would go into a dokkaSourceSets block as above.
-// }
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = "io.github.adhamkhwaldeh"
+                artifactId = "livetrackingsdk"
+                version = "1.0.0"
+
+                // Publish the release AAR
+                artifact("$buildDir/outputs/aar/${project.name}-release.aar")
+
+                pom {
+                    name.set("LiveTrackingSDK")
+                    description.set("Android SDK for live tracking")
+                    url.set("https://github.com/adhamkhwaldeh/livetrackingsdk")
+
+                    licenses {
+                        license {
+                            name.set("Apache-2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("adhamkhwaldeh")
+                            name.set("Adham Khwaldeh")
+                            email.set("adhamkhwaldeh@gmail.com")
+                        }
+                    }
+
+                    scm {
+                        connection.set("scm:git:git://github.com/adhamkhwaldeh/livetrackingsdk.git")
+                        developerConnection.set("scm:git:ssh://github.com/adhamkhwaldeh/livetrackingsdk.git")
+                        url.set("https://github.com/adhamkhwaldeh/livetrackingsdk")
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "OSSRH"
+//                url = uri("https://central.sonatype.com/api/v1/publish")
+                url = if (version.toString().endsWith("SNAPSHOT"))
+                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                else
+                    uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+
+//                url = if (version.toString().endsWith("SNAPSHOT"))
+//                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+//                else
+//                    uri("https://central.sonatype.com/api/v1/publish")
+
+                credentials {
+                    username = project.findProperty("sonatypeUsername") as String?
+                    password = project.findProperty("sonatypePassword") as String?
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd() // Use the installed gpg command
+//        options {
+//            commandLineArguments = listOf("--batch", "--pinentry-mode", "loopback")
+//        }
+        sign(publishing.publications["release"])
+    }
+}

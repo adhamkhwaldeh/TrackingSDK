@@ -136,6 +136,10 @@ class LocationTrackingManager(
         }
     }
 
+    fun resetCurrentTrackStateAfterChangeMode() {
+        currentTrackingState = TrackingState.IDLE
+    }
+
     val trackingState: TrackingState
         get() {
             return currentTrackingState
@@ -154,6 +158,10 @@ class LocationTrackingManager(
         if (!trackingLocationListeners.contains(listener)) {
             trackingLocationListeners.add(listener)
         }
+    }
+
+    fun removeTrackingLocationListener(listener: ITrackingLocationListener) {
+        trackingLocationListeners.remove(listener)
     }
 
     //#region Tracking actions Listener

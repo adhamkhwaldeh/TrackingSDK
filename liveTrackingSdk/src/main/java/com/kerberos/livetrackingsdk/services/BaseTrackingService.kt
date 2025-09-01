@@ -403,6 +403,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
 
     override fun onDestroy() {
         super.onDestroy()
+        locationTrackingManager.removeTrackingLocationListener(listener = this)
         Timber.d("The service has been destroyed")
 //        wakeLock?.release();
     }

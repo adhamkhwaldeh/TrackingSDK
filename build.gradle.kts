@@ -37,7 +37,9 @@ tasks.register("cleanAll") {
             dependsOn(cleanTask)
         }
     }
+
 }
+
 
 // Then run:
 // ./gradlew cleanAll

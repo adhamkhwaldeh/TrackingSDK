@@ -1,5 +1,6 @@
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.net.URI
+import org.gradle.plugins.signing.Sign
 
 plugins {
     alias(libs.plugins.android.library)
@@ -356,6 +357,9 @@ afterEvaluate {
         sign(publishing.publications["release"])
     }
 
+    tasks.withType<Sign>().configureEach {
+        enabled = false
+    }
     tasks.named("signReleasePublication") {
         dependsOn("bundleReleaseAar")
     }

@@ -100,8 +100,8 @@ dependencies {
     implementation(libs.koin.annotations)
     kapt(libs.koin.ksp.compiler)
 
-    implementation("com.github.adhamkhwaldeh:liveTrackingSdk:1.0.3")
-//    implementation(project(":liveTrackingSdk"))
+//    implementation("com.github.adhamkhwaldeh:liveTrackingSdk:1.0.3")
+    implementation(project(":liveTrackingSdk"))
 
 }
 

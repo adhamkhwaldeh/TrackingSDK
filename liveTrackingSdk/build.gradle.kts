@@ -14,7 +14,7 @@ plugins {
 // THIS IS THE MOST IMPORTANT PART FOR THIS ERROR
 // Or your intended release version, e.g., "0.1.2"
 group = "io.github.adhamkhwaldeh"
-version = "1.0.3"
+version = "1.0.4"
 
 android {
     namespace = "com.kerberos.livetrackingsdk"
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-        version = "1.0.3"
+        version = "1.0.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -68,7 +68,7 @@ jreleaser {
     project {
         // Only set version here if you explicitly want to override Gradle's project.version for JReleaser
         // If not, remove the line below or comment it out.
-        // version = "1.0.3"
+        // version = "1.0.4"
 
         name = "liveTrackingSdk" // Usually the artifactId
         description = "A Live Tracking SDK for Android."
@@ -77,10 +77,10 @@ jreleaser {
         website = "https://github.com/adhamkhwaldeh/liveTrackingSdk" // Your project's website/repo
         authors = listOf("Adham Khwaldeh <adhamkhwaldeh@gmail.com>")
         license = "Apache-2.0" // SPDX identifier
-        version = "1.0.3"
+        version = "1.0.4"
 //        groupId = "io.github.adhamkhwaldeh"
 //        artifactId = "livetrackingsdk"
-//        version = "1.0.3"
+//        version = "1.0.4"
         // java.groupId = "io.github.adhamkhwaldeh" // JReleaser usually infers this from project.group
         // java.artifactId = "livetrackingsdk" // JReleaser usually infers this
     }
@@ -227,7 +227,7 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
 //
 //                groupId = "io.github.adhamkhwaldeh"
 //                artifactId = "livetrackingsdk"
-//                version = "1.0.3"
+//                version = "1.0.4"
 //
 //                pom {
 //                    name.set("Livetrackingsdk")
@@ -292,7 +292,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "io.github.adhamkhwaldeh"
                 artifactId = "livetrackingsdk"
-                version = "1.0.3"
+                version = "1.0.4"
 
                 // Publish the release AAR
                 artifact("$buildDir/outputs/aar/${project.name}-release.aar")

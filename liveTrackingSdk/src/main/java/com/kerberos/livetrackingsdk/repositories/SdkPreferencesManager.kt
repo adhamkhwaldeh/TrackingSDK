@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.dataStore
+package com.kerberos.livetrackingsdk.repositories
 
 import android.content.Context
 import android.content.SharedPreferences

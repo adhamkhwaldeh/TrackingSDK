@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
@@ -13,7 +14,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.kerberos.livetrackingsdk.dataStore.SdkPreferencesManager
+import com.kerberos.livetrackingsdk.repositories.SdkPreferencesManager
 import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
 import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
 import com.kerberos.livetrackingsdk.enums.TrackingState
@@ -45,16 +46,21 @@ class LocationTrackingManager(
 
             val minTimeMillis = sdkPreferencesManager.getSettings().locationUpdateInterval
             val minDistanceMeters = sdkPreferencesManager.getSettings().minDistanceMeters
-
-            var builder = LocationRequest.Builder(
+            Log.e("minTimeMillis", "minTimeMillis $minTimeMillis")
+//            Timber.d("minTimeMillis", "minTimeMillis $minTimeMillis")
+            val builder = LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
-                minTimeMillis.coerceAtLeast(1000L)
-            ) // Ensure interval isn't too small
+                minTimeMillis.coerceAtLeast(1000L),
+            )
+                .setWaitForAccurateLocation(false)
+                .setMaxUpdateAgeMillis(minTimeMillis)
+                // Ensure interval isn't too small
                 // .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Already set in constructor
+                .setIntervalMillis(minTimeMillis)
                 .setMinUpdateIntervalMillis(minTimeMillis) // Smallest interval if updates are more frequent from other sources
 
             if (minDistanceMeters != null) {
-                builder = builder.setMinUpdateDistanceMeters(minDistanceMeters)
+//                builder = builder.setMinUpdateDistanceMeters(minDistanceMeters)
                 // .setMaxUpdates(1) // Remove if you want continuous updates
                 // Use the values set by the builder
             }

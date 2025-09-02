@@ -9,49 +9,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * @param Type
  * @param Params
- * @property ioScope
- * @property main
  * @constructor Create empty Base sealed use case
  */
-abstract class BaseSealedUseCase<out Type, in Params>(
-//    private val ioScope: CoroutineScope,
-//    private val main: CoroutineDispatcher = Dispatchers.Main,
-) where Type : Any? {
-
-    abstract suspend operator fun invoke(params: Params): Flow<BaseState<Type>>
-
-    /**
-     * Run
-     *
-     * @param params
-     * @return
-     */
-//    abstract suspend fun run(params: Params): BaseState<Type>?
-
-    /**
-     * Invoke
-     *
-     * @param params
-     * @param onResult
-     * @receiver
-     */
-//    operator fun invoke(
-//        params: Params,
-//        onResult: (BaseState<Type>) -> Unit = {},
-//    ) {
-//        ioScope.launch {
-//            val result = async { run(params) }
-//            withContext(main) {
-//                result.await()?.let { onResult(it) }
-//            }
-//        }
-//    }
-
-    /**
-     * None
-     *
-     * @constructor Create empty None
-     */
-    @Suppress("unused")
-    class None
-}
+abstract class BaseSealedUseCase<out Type, in Params> :
+    BaseUseCase<BaseState<Type>, Params>() where Type : Any?

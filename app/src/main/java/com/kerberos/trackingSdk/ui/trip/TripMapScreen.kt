@@ -16,22 +16,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.kerberos.trackingSdk.viewModels.MapViewModel
 import com.kerberos.trackingSdk.viewModels.TripTrackViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun TripMapScreen(viewModel: TripTrackViewModel = koinViewModel()) {
-    val tripTracks by viewModel.tripTracks.collectAsState()
-    val tripStatus by viewModel.tripStatus.collectAsState()
+fun TripMapScreen(
+    viewModel: MapViewModel = koinViewModel(),
+    tripTrackViewModel: TripTrackViewModel = koinViewModel(),
+) {
+    val tripTracks by tripTrackViewModel.tripTracks.collectAsState()
+
     val currentLocation by viewModel.currentLocation.collectAsState()
     var cameraInitialized by remember { mutableStateOf(false) }
 
@@ -41,7 +47,8 @@ fun TripMapScreen(viewModel: TripTrackViewModel = koinViewModel()) {
     }
 
     val locationPermissionState = rememberPermissionState(
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+//        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     LaunchedEffect(locationPermissionState.permission) {
@@ -72,18 +79,22 @@ fun TripMapScreen(viewModel: TripTrackViewModel = koinViewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
+            properties = MapProperties(
+                isMyLocationEnabled = currentLocation != null
+            ),
             cameraPositionState = cameraPositionState
         ) {
             if (tripTracks.size > 1) {
                 Polyline(points = tripTracks.map { LatLng(it.latitude, it.longitude) })
             }
+            currentLocation?.let {
+                Marker(
+                    state = MarkerState(position = it),
+                    title = "You are here"
+                )
+            }
         }
         TripControls(
-            tripStatus = tripStatus,
-            onStart = viewModel::startTrip,
-            onPause = viewModel::pauseTrip,
-            onResume = viewModel::resumeTrip,
-            onStop = viewModel::stopTrip,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)

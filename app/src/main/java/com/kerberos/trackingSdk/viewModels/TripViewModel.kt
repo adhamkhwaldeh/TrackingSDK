@@ -13,9 +13,9 @@ import com.kerberos.trackingSdk.models.TripModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class TripViewModel constructor(
-    private val tripPagingRepository: com.kerberos.trackingSdk.repositories.repositories.TripPagingRepository,
-    private val tripUseCaseFactory: com.kerberos.trackingSdk.factories.TripUseCaseFactory,
+class TripViewModel(
+    private val tripPagingRepository: TripPagingRepository,
+    private val tripUseCaseFactory: TripUseCaseFactory,
     private val context: Context
 ) : ViewModel() {
 
@@ -55,20 +55,6 @@ class TripViewModel constructor(
             context.contentResolver.openOutputStream(uri)?.let {
                 useCase.execute(it)
             }
-        }
-    }
-
-    fun updateTrip(tripModel: TripModel) {
-        viewModelScope.launch {
-            val useCase = tripUseCaseFactory.createUpdateUseCase()
-            useCase.execute(tripModel.toTrip())
-        }
-    }
-
-    fun deleteTrip(tripModel: TripModel) {
-        viewModelScope.launch {
-            val useCase = tripUseCaseFactory.createDeleteUseCase()
-            useCase.execute(tripModel.toTrip())
         }
     }
 

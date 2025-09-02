@@ -10,7 +10,7 @@ class ImportTripsUseCase(
     private val tripImporter: TripImporter
 ) {
     suspend fun execute(inputStream: InputStream) {
-        val trips = tripImporter.import(inputStream).map { it.toTrip() }
+        val trips = tripImporter.import(inputStream).map { it }
         tripRepository.insertTrips(trips)
     }
 }

@@ -1,13 +1,23 @@
 package com.kerberos.trackingSdk.useCases
 
 
+import com.kerberos.trackingSdk.base.BaseSealedUseCase
+import com.kerberos.trackingSdk.base.states.BaseState
+import com.kerberos.trackingSdk.base.states.asBasState
+import com.kerberos.trackingSdk.models.TripModel
 import com.kerberos.trackingSdk.orm.Trip
 import com.kerberos.trackingSdk.repositories.repositories.TripRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class DeleteTripUseCase(
     private val tripRepository: TripRepository
-) {
-    suspend fun execute(trip: Trip) {
-        tripRepository.deleteTrip(trip)
+) : BaseSealedUseCase<Unit, TripModel>() {
+
+    override suspend fun invoke(params: TripModel): Flow<BaseState<Unit>> {
+        return flow {
+            emit(tripRepository.deleteTrip(params).asBasState())
+        }
     }
+
 }

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Trip::class, TripTrack::class], version = 3)
+@Database(entities = [Trip::class, TripTrack::class], version = 5)
 abstract class LiveTrackingDatabase : RoomDatabase() {
 
     abstract fun tripDao(): TripDao
@@ -22,7 +22,7 @@ abstract class LiveTrackingDatabase : RoomDatabase() {
                     context.applicationContext,
                     LiveTrackingDatabase::class.java,
                     "live_tracking_database"
-                ).build()
+                ).fallbackToDestructiveMigration(true).build()
                 INSTANCE = instance
                 instance
             }

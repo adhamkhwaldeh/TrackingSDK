@@ -10,6 +10,7 @@ fun Trip.toTripModel(): TripModel {
         endTime = this.endTime,
         tripDuration = this.tripDuration,
         totalDistance = this.totalDistance,
+        totalPoints = this.totalPoints,
         isActive = this.isActive
     )
 }
@@ -21,6 +22,7 @@ fun TripModel.toTrip(): Trip {
         endTime = this.endTime,
         tripDuration = this.tripDuration,
         totalDistance = this.totalDistance,
+        totalPoints = this.totalPoints,
         isActive = this.isActive
     )
 }

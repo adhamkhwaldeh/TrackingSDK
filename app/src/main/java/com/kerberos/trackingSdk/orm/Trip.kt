@@ -19,13 +19,16 @@ class Trip() {
     var endTime: Long? = null
 
     @ColumnInfo(name = "tripDuration")
-    var tripDuration: Long? = null
+    var tripDuration: Long = 0
 
     @ColumnInfo(name = "totalDistance")
-    var totalDistance: Double? = null
+    var totalDistance: Double = 0.0
 
     @ColumnInfo(name = "isActive")
     var isActive: Boolean = false
+
+    @ColumnInfo(name = "totalPoints")
+    var totalPoints: Long = 0
 
     @Ignore
 //    @JvmOverloads
@@ -33,8 +36,9 @@ class Trip() {
         id: Int = 0,
         startTime: Long = 0,
         endTime: Long? = null,
-        tripDuration: Long? = null,
-        totalDistance: Double? = null,
+        tripDuration: Long = 0,
+        totalDistance: Double = 0.0,
+        totalPoints: Long = 0,
         isActive: Boolean = false
     ) : this() {
         this.id = id
@@ -42,6 +46,7 @@ class Trip() {
         this.endTime = endTime
         this.tripDuration = tripDuration
         this.totalDistance = totalDistance
+        this.totalPoints = totalPoints
         this.isActive = isActive
     }
 }

@@ -1,7 +1,7 @@
 package com.kerberos.livetrackingsdk
 
 import android.content.Context
-import com.kerberos.livetrackingsdk.dataStore.SdkPreferencesManager
+import com.kerberos.livetrackingsdk.repositories.SdkPreferencesManager
 import com.kerberos.livetrackingsdk.enums.LiveTrackingMode
 import com.kerberos.livetrackingsdk.interfaces.ITrackingStatusListener
 import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
@@ -11,9 +11,9 @@ import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.livetrackingsdk.models.SdkSettings
 import com.kerberos.livetrackingsdk.services.BaseTrackingService
 import com.kerberos.livetrackingsdk.services.DefaultTrackingService
-import com.kerberos.livetrackingsdk.trackingManagers.BackgroundTrackingManager
-import com.kerberos.livetrackingsdk.trackingManagers.BaseTrackingManager
-import com.kerberos.livetrackingsdk.trackingManagers.ForegroundTrackingManager
+import com.kerberos.livetrackingsdk.managers.BackgroundTrackingManager
+import com.kerberos.livetrackingsdk.managers.BaseTrackingManager
+import com.kerberos.livetrackingsdk.managers.ForegroundTrackingManager
 
 
 class LiveTrackingManager private constructor(
@@ -158,10 +158,10 @@ class LiveTrackingManager private constructor(
 
     fun changeTrackingMode(newMode: LiveTrackingMode): Boolean {
         if (newMode == liveTrackingMode) return true
-        val stopResult = currentTrackingManager.destroyTrackingManager() ?: false
-        if (!stopResult) return false
         currentLocationTrackingManager?.resetCurrentTrackStateAfterChangeMode()
 
+        val stopResult = currentTrackingManager.destroyTrackingManager() ?: false
+        if (!stopResult) return false
 //        trackingLocationListener.removeIf{x->}
 //        clearAllTrackingLocationListeners()
 //        clearAllTrackingStatusListeners()

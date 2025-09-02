@@ -1,4 +1,4 @@
-package com.kerberos.livetrackingsdk.trackingManagers
+package com.kerberos.livetrackingsdk.managers
 
 import android.content.ComponentName
 import android.content.Context
@@ -12,7 +12,6 @@ import com.kerberos.livetrackingsdk.BuildConfig
 import com.kerberos.livetrackingsdk.ITrackingService
 import com.kerberos.livetrackingsdk.interfaces.IServiceExposeWithBinder
 import com.kerberos.livetrackingsdk.interfaces.ITrackingSdkModeStatusListener
-import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 import com.kerberos.livetrackingsdk.services.BaseTrackingService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import timber.log.Timber

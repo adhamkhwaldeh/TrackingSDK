@@ -1,9 +1,8 @@
-package com.kerberos.livetrackingsdk.trackingManagers
+package com.kerberos.livetrackingsdk.managers
 
 import android.content.Context
 import com.kerberos.livetrackingsdk.interfaces.ITrackingActionsListener
 import com.kerberos.livetrackingsdk.interfaces.ITrackingSdkModeStatusListener
-import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
 
 abstract class BaseTrackingManager(
     var context: Context,

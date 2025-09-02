@@ -2,6 +2,8 @@ package com.kerberos.trackingSdk.useCases
 
 import com.kerberos.trackingSdk.base.BaseSealedUseCase
 import com.kerberos.trackingSdk.base.states.BaseState
+import com.kerberos.trackingSdk.base.states.asBasState
+import com.kerberos.trackingSdk.models.TripModel
 import com.kerberos.trackingSdk.orm.Trip
 import com.kerberos.trackingSdk.repositories.repositories.TripRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,16 +12,11 @@ import java.util.Date
 
 class AddNewTripUseCase(
     private val tripRepository: TripRepository
-) : BaseSealedUseCase<Trip, Unit>() {
+) : BaseSealedUseCase<Unit, TripModel>() {
 
-    override suspend fun invoke(params: Unit): Flow<BaseState<Trip>> {
+    override suspend fun invoke(params: TripModel): Flow<BaseState<Unit>> {
         return flow {
-            val trip = Trip(
-                startTime = Date().time,
-                isActive = true
-            )
-//            val id = tripRepository.createTrip(trip)
-//            emit(tripRepository.getTrip(id)!!)
+            emit(tripRepository.createTrip(params).asBasState())
         }
     }
 }

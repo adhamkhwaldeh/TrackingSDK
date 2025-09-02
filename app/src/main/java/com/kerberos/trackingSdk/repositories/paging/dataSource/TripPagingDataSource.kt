@@ -2,6 +2,7 @@ package com.kerberos.trackingSdk.repositories.paging.dataSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.kerberos.trackingSdk.mappers.toTripModel
 import com.kerberos.trackingSdk.models.TripModel
 import com.kerberos.trackingSdk.orm.TripDao
 
@@ -16,14 +17,7 @@ class TripPagingDataSource(
             when (result) {
                 is LoadResult.Page -> {
                     val data = result.data.map { trip ->
-                        TripModel(
-                            id = trip.id,
-                            tripDuration = trip.tripDuration,
-                            startTime = trip.startTime,
-                            totalDistance = trip.totalDistance,
-                            endTime = trip.endTime,
-                            isActive = trip.isActive
-                        )
+                        trip.toTripModel()
                     }
                     LoadResult.Page(
                         data = data,

@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)
+//    implementation(libs.androidx.material3.pullrefresh)
+    implementation("eu.bambooapps:compose-material3-pullrefresh:1.1.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

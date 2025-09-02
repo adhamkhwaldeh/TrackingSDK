@@ -74,7 +74,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
 
 
         when (locationTrackingManager.trackingState) {
-            TrackingState.IDLE -> {
+            TrackingState.IDLE, TrackingState.STOPPED -> {
                 builder.addAction(
                     createAction(
                         R.drawable.ic_media_play,
@@ -124,9 +124,7 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
                 )
             }
 
-            TrackingState.STOPPED -> {
 
-            }
         }
 
         defaultNotificationConfiguration!!.defaultIntentActivity?.let { defaultIntentActivity ->
@@ -324,6 +322,11 @@ abstract class BaseTrackingService : Service(), ITrackingActionsListener,
                             // For older versions, you might just update the notification
                             updateNotification()
                         }
+                    }
+                } else if (locationTrackingManager.trackingState == TrackingState.STOPPED) {
+                    if (this@BaseTrackingService.onStartTracking()) {
+                        // For older versions, you might just update the notification
+                        updateNotification()
                     }
                 }
             }

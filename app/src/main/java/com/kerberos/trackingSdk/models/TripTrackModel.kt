@@ -8,4 +8,8 @@ data class TripTrackModel(
     val longitude: Double,
     val timestamp: Long,
     val speed: Double,
+    val altitude: Double,
+    val accuracy: Double,
+    val bearing: Double
+
 )

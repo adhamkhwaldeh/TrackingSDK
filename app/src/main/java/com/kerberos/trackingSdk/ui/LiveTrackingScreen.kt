@@ -40,13 +40,13 @@ fun LiveTrackingScreen(
         Row {
             Button(
                 onClick = { viewModel.startTracking() },
-                enabled = trackingState == TrackingState.STOPPED
+                enabled = TrackingState.startable(trackingState)
             ) {
                 Text("Start")
             }
             Button(
                 onClick = { viewModel.stopTracking() },
-                enabled = trackingState != TrackingState.STOPPED
+                enabled = TrackingState.stoppable(trackingState)
             ) {
                 Text("Stop")
             }

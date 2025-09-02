@@ -1,80 +1,48 @@
 package com.kerberos.trackingSdk.viewModels
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.kerberos.livetrackingsdk.interfaces.ITrackingLocationListener
-import com.kerberos.livetrackingsdk.managers.LocationTrackingManager
+import com.kerberos.trackingSdk.base.states.BaseState
+import com.kerberos.trackingSdk.models.TripTrackModel
 import com.kerberos.trackingSdk.orm.TripTrack
 import com.kerberos.trackingSdk.repositories.repositories.TripTrackRepository
+import com.kerberos.trackingSdk.useCases.AddTripTrackUseCase
+import com.kerberos.trackingSdk.useCases.GetTripTracksUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-enum class TripStatus {
-    STOPPED,
-    RUNNING,
-    PAUSED
-}
 
 class TripTrackViewModel(
-    private val tripTrackRepository: TripTrackRepository,
-//    private val locationTrackingManager: LocationTrackingManager
-) :
-    ViewModel(), ITrackingLocationListener {
+    private val addTripTrackUseCase: AddTripTrackUseCase,
+    private val getTripTracksUseCase: GetTripTracksUseCase,
+) : ViewModel() {
 
-    private val _tripTracks = MutableStateFlow<List<TripTrack>>(emptyList())
-    val tripTracks: StateFlow<List<TripTrack>> = _tripTracks
+    private val _insertResult = MutableSharedFlow<BaseState<Unit>>()
+    val insertResult: SharedFlow<BaseState<Unit>> = _insertResult
 
-    private val _currentLocation = MutableStateFlow<LatLng?>(null)
-    val currentLocation: StateFlow<LatLng?> = _currentLocation
-
-    private val _tripStatus = MutableStateFlow(TripStatus.STOPPED)
-    val tripStatus: StateFlow<TripStatus> = _tripStatus
-
-    fun getTripTracks(tripId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            tripTrackRepository.getTripTracks(tripId).collect {
-                _tripTracks.value = it
+    fun addTripTrack(tripTrack: TripTrackModel) {
+        viewModelScope.launch {
+            addTripTrackUseCase(tripTrack).collectLatest { result ->
+                _insertResult.emit(result)
             }
         }
     }
 
 
-    fun startTrip() {
-        _tripStatus.value = TripStatus.RUNNING
-    }
+    private val _tripTracks = MutableStateFlow<List<TripTrackModel>>(emptyList())
+    val tripTracks: StateFlow<List<TripTrackModel>> = _tripTracks
 
-    fun pauseTrip() {
-        _tripStatus.value = TripStatus.PAUSED
-    }
-
-    fun resumeTrip() {
-        _tripStatus.value = TripStatus.RUNNING
-    }
-
-    fun stopTrip() {
-        _tripStatus.value = TripStatus.STOPPED
-    }
-
-    fun startLocationUpdates() {
-//        locationTrackingManager.addTrackingLocationListener(this)
-//        locationTrackingManager.onStartTracking()
-    }
-
-    fun stopLocationUpdates() {
-//        locationTrackingManager.onStopTracking()
-    }
-
-    override fun onLocationUpdated(location: Location?) {
-        location?.let {
-            _currentLocation.value = LatLng(it.latitude, it.longitude)
+    fun getTripTracks(tripId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTripTracksUseCase(tripId).collect {
+                _tripTracks.value = it
+            }
         }
     }
 
-    override fun onLocationUpdateFailed(error: Exception) {
-        // Handle location update failure
-    }
 }

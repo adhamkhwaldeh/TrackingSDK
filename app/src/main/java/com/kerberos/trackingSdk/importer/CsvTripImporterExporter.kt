@@ -22,8 +22,8 @@ class CsvTripImporterExporter : TripImporter, TripExporter {
                         id = it[0].toInt(),
                         startTime = it[1].toLong(),
                         endTime = it[2].toLongOrNull(),
-                        tripDuration = it[3].toLongOrNull(),
-                        totalDistance = it[4].toDoubleOrNull(),
+                        tripDuration = it[3].toLong(),
+                        totalDistance = it[4].toDouble(),
                         isActive = it[5].toBoolean()
                     )
                 )

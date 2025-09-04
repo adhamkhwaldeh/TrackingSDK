@@ -271,9 +271,9 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 - **Dashboard View**
 
-| ![Screenshot 1: Dashboard View](./demos/Screenshot_2025-02-01-13-40-48-016_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 2: Dashboard View](./demos/Screenshot_2025-02-01-13-40-54-138_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 3: Dashboard View](./demos/Screenshot_2025-02-01-13-41-31-480_com.enpal.assignment.enpal_assignment.jpg) |
+| ![Screenshot 1: Dashboard View](./demos/Screenshot_20250904_153316.jpg) | ![Screenshot 2: Dashboard View](./demos/Screenshot_20250904_153340.jpg) | ![Screenshot 3: Dashboard View](./demos/Screenshot_20250904_153354.jpg) |
 |-----------------|-----------------|-----------------|
-| ![Screenshot 4: Dashboard View](./demos/Screenshot_2025-02-01-13-41-37-985_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 5: Dashboard View](./demos/Screenshot_2025-02-01-13-41-54-440_com.enpal.assignment.enpal_assignment.jpg) |                                 |
+| ![Screenshot 4: Dashboard View](./demos/Screenshot_20250904_153401.jpg) | ![Screenshot 5: Dashboard View](./demos/Screenshot_20250904_153431.jpg) |                                 |
 |-----------------|-----------------|-----------------|
 
 ### Videos

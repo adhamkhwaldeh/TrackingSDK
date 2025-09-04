@@ -157,7 +157,7 @@ Your custom service would typically extend `com.kerberos.livetrackingsdk.service
 You can refer to `TripBackgroundService` in the showcase application as an example of how such a custom service might be implemented.
 
 **Integration:**
-When initializing the `LiveTrackingManager`, you can specify your custom service class using the `Builder`. 
+When initializing the `LiveTrackingManager`, you can specify your custom service class using the `Builder`.
 
 1.  **Create your custom service:**
     Ensure your service extends `com.kerberos.livetrackingsdk.services.BaseTrackingService` or handles its lifecycle and location updates correctly.
@@ -258,7 +258,7 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 - **Permissions not granted:** Ensure you have requested the necessary location permissions from the user at runtime.
 - **GPS not enabled:** The SDK may throw a `GpsNotEnabledException` if the user's GPS is turned off. Prompt the user to enable it.
 - **Foreground service not starting:** Make sure you have provided a valid `DefaultNotificationConfiguration` if using `LiveTrackingMode.FOREGROUND_SERVICE`.
-- **Custom background service issues:** 
+- **Custom background service issues:**
     - Ensure your custom service is correctly declared in `AndroidManifest.xml`.
     - Verify that your custom service correctly handles its lifecycle and location updates, especially if not extending `BaseTrackingService`.
     - Check for any errors logged by your custom service or the SDK related to service instantiation.
@@ -271,12 +271,15 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 - **Dashboard View**
 
-| ![Screenshot 1: Dashboard View](./demos/Screenshot_2025-02-01-13-40-48-016_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 2: Dashboard View](./demos/Screenshot_2025-02-01-13-40-54-138_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 3: Dashboard View](./demos/Screenshot_2025-02-01-13-41-31-480_com.enpal.assignment.enpal_assignment.jpg) |
+| ![Screenshot 1: Dashboard View](./Docs/Screenshot_20250904_153316.png) | ![Screenshot 2: Dashboard View](./Docs/Screenshot_20250904_153340.png) | ![Screenshot 3: Dashboard View](./Docs/Screenshot_20250904_153354.png) |
 |-----------------|-----------------|-----------------|
-| ![Screenshot 4: Dashboard View](./demos/Screenshot_2025-02-01-13-41-37-985_com.enpal.assignment.enpal_assignment.jpg) | ![Screenshot 5: Dashboard View](./demos/Screenshot_2025-02-01-13-41-54-440_com.enpal.assignment.enpal_assignment.jpg) |                                 |
+| ![Screenshot 4: Dashboard View](./Docs/Screenshot_20250904_153401.png) | ![Screenshot 5: Dashboard View](./Docs/Screenshot_20250904_153431.png) |                                 |
 |-----------------|-----------------|-----------------|
 
 ### Videos
 
-| [![Watch video 1: Demo Video](./demos/Enpal_online_polling_Screenrecorder.mp4)](https://drive.google.com/file/d/17zkwo6dgPVkaYr335AIXtbl-MeYYX-No/view?usp=drive_link) | [![Watch video 2: Demo Video](./demos/Enpal_offline_Screenrecorder.mp4)](https://drive.google.com/file/d/1hpAOUghNJHzyd0IuBiU8yonDpjIztM0N/view?usp=drive_link) |
-|-----------------|-----------------|
+▶️ [Watch on YouTube](https://img.youtube.com/vi/OfhSMe3b7xg/maxresdefault.jpg)](https://youtu.be/OfhSMe3b7xg)
+
+[![Watch the video](https://img.youtube.com/vi/OfhSMe3b7xg/maxresdefault.jpg)](https://youtu.be/OfhSMe3b7xg)
+
+

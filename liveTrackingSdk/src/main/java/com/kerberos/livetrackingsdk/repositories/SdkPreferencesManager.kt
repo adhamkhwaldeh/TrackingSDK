@@ -40,10 +40,11 @@ class SdkPreferencesManager(context: Context) {
             PreferencesKeys.LOCATION_UPDATE_INTERVAL,
             DEFAULT_LOCATION_UPDATE_INTERVAL
         )
-        val minDistanceMeters = sharedPreferences.getFloat(
-            PreferencesKeys.LOCATION_UPDATE_DISTANCE,
-            DEFAULT_MIN_DISTANCE_METERS
-        )
+        val minDistanceMeters = if (sharedPreferences.contains(PreferencesKeys.LOCATION_UPDATE_DISTANCE)) {
+            sharedPreferences.getFloat(PreferencesKeys.LOCATION_UPDATE_DISTANCE, DEFAULT_MIN_DISTANCE_METERS)
+        } else {
+            null
+        }
         val backgroundToggle = sharedPreferences.getBoolean(
             PreferencesKeys.BACKGROUND_TRACKING_TOGGLE,
             DEFAULT_BACKGROUND_TRACKING_TOGGLE
@@ -76,10 +77,9 @@ class SdkPreferencesManager(context: Context) {
     fun updateAllSettings(newSettings: SdkSettings) {
         sharedPreferences.edit {
             putLong(PreferencesKeys.LOCATION_UPDATE_INTERVAL, newSettings.locationUpdateInterval)
-            putFloat(
-                PreferencesKeys.LOCATION_UPDATE_DISTANCE,
-                newSettings.minDistanceMeters ?: DEFAULT_MIN_DISTANCE_METERS
-            )
+            newSettings.minDistanceMeters?.let {
+                putFloat(PreferencesKeys.LOCATION_UPDATE_DISTANCE, it)
+            } ?: remove(PreferencesKeys.LOCATION_UPDATE_DISTANCE) // Remove if null
             putBoolean(
                 PreferencesKeys.BACKGROUND_TRACKING_TOGGLE,
                 newSettings.backgroundTrackingToggle

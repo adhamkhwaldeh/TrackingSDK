@@ -27,6 +27,7 @@ class BackgroundTrackingManager(
 
     private val svcConn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, binder: IBinder) {
+
             itsTrackService = ITrackingService.Stub.asInterface(binder)
             if (itsTrackService is IServiceExposeWithBinder) { // You'd need to know the concrete stub type
 

@@ -74,7 +74,7 @@ class SettingsViewModel(
                 locationUpdateInterval = _uiState.value.locationUpdateInterval.toLongOrNull()
                     ?: 10000L,
                 backgroundTrackingToggle = _uiState.value.backgroundTrackingEnabled,
-                minDistanceMeters = _uiState.value.minDistance.toFloatOrNull() ?: 25f
+                minDistanceMeters = _uiState.value.minDistance.toFloatOrNull()
             )
             appPrefsStorage.setTrackSDKConfiguration(currentConfig)
             appPrefsStorage.saveLanguage(_uiState.value.language)

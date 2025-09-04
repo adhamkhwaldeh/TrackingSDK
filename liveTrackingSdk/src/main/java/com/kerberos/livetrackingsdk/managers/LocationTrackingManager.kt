@@ -48,7 +48,7 @@ class LocationTrackingManager(
             val minDistanceMeters = sdkPreferencesManager.getSettings().minDistanceMeters
             Log.e("minTimeMillis", "minTimeMillis $minTimeMillis")
 //            Timber.d("minTimeMillis", "minTimeMillis $minTimeMillis")
-            val builder = LocationRequest.Builder(
+            var builder = LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 minTimeMillis.coerceAtLeast(1000L),
             )
@@ -60,20 +60,12 @@ class LocationTrackingManager(
                 .setMinUpdateIntervalMillis(minTimeMillis) // Smallest interval if updates are more frequent from other sources
 
             if (minDistanceMeters != null) {
-//                builder = builder.setMinUpdateDistanceMeters(minDistanceMeters)
+                builder = builder.setMinUpdateDistanceMeters(minDistanceMeters)
                 // .setMaxUpdates(1) // Remove if you want continuous updates
                 // Use the values set by the builder
             }
 
             return builder.build()
-
-//            return LocationRequest.Builder(1000L)
-//                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-//                .setMinUpdateIntervalMillis(minTimeMillis)
-//                .setIntervalMillis(1000L)
-////                .setMinUpdateDistanceMeters(minDistanceMeters)
-////                .setMaxUpdates(1)
-//                .build()
         }
 
     private var trackingLocationListeners: MutableList<ITrackingLocationListener> =
@@ -172,23 +164,52 @@ class LocationTrackingManager(
 
     //#region Tracking actions Listener
     override fun onStartTracking(): Boolean {
-        if (!(ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED)
-        ) {
-            fusedClient.requestLocationUpdates(request, callback, Looper.getMainLooper())
-            currentTrackingState = TrackingState.STARTED
-        } else {
+        if (!PermissionsHelper.isPermissionGranted(context)) {
+            Timber.w("Location permission not granted for starting tracking.")
             trackingLocationListeners.forEach { trackingLocationInterface ->
                 trackingLocationInterface.onLocationUpdateFailed(PermissionNotGrantedException())
             }
             return false
         }
-        return true
+
+        try {
+            // Request an immediate location update
+            fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        Timber.d("Successfully obtained immediate location: $location")
+                        trackingLocationListeners.forEach { listener ->
+                            listener.onLocationUpdated(location)
+                        }
+                    } else {
+                        Timber.d("Immediate location via getCurrentLocation was null (e.g., GPS off or unavailable).")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Timber.e(exception, "Failed to get immediate current location.")
+                    // Not calling onLocationUpdateFailed here as regular updates might still work,
+                    // or onLocationAvailability will report issues like GPS disabled.
+                }
+
+            // Start regular location updates
+            fusedClient.requestLocationUpdates(request, callback, Looper.getMainLooper())
+            currentTrackingState = TrackingState.STARTED
+            Timber.i("Location tracking successfully initiated with regular updates.")
+            return true
+
+        } catch (secEx: SecurityException) {
+            Timber.e(secEx, "SecurityException in onStartTracking. Permissions may have been revoked or are missing.")
+            trackingLocationListeners.forEach { trackingLocationInterface ->
+                trackingLocationInterface.onLocationUpdateFailed(PermissionNotGrantedException("SecurityException: ${secEx.message}"))
+            }
+            return false
+        } catch (ex: Exception) { // Catching a broader exception for unexpected issues
+            Timber.e(ex, "Unexpected exception in onStartTracking.")
+            trackingLocationListeners.forEach { trackingLocationInterface ->
+                trackingLocationInterface.onLocationUpdateFailed(ex)
+            }
+            return false
+        }
     }
 
     override fun onResumeTracking(): Boolean {

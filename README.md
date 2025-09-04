@@ -278,5 +278,7 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 ### Videos
 
+▶️ [Watch on YouTube](https://youtu.be/OfhSMe3b7xg)
+
 | [![Watch video 1: Demo Video](https://www.youtube.com/shorts/OfhSMe3b7xg)](https://www.youtube.com/shorts/OfhSMe3b7xg) | [![Watch video 2: Demo Video](https://www.youtube.com/shorts/OfhSMe3b7xg)](https://www.youtube.com/shorts/OfhSMe3b7xg) |
 |-----------------|-----------------|

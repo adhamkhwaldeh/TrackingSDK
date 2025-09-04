@@ -271,12 +271,12 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 - **Dashboard View**
 
-| ![Screenshot 1: Dashboard View](./demos/Screenshot_20250904_153316.jpg) | ![Screenshot 2: Dashboard View](./demos/Screenshot_20250904_153340.jpg) | ![Screenshot 3: Dashboard View](./demos/Screenshot_20250904_153354.jpg) |
+| ![Screenshot 1: Dashboard View](./Docs/Screenshot_20250904_153316.jpg) | ![Screenshot 2: Dashboard View](./Docs/Screenshot_20250904_153340.jpg) | ![Screenshot 3: Dashboard View](./Docs/Screenshot_20250904_153354.jpg) |
 |-----------------|-----------------|-----------------|
-| ![Screenshot 4: Dashboard View](./demos/Screenshot_20250904_153401.jpg) | ![Screenshot 5: Dashboard View](./demos/Screenshot_20250904_153431.jpg) |                                 |
+| ![Screenshot 4: Dashboard View](./Docs/Screenshot_20250904_153401.jpg) | ![Screenshot 5: Dashboard View](./Docs/Screenshot_20250904_153431.jpg) |                                 |
 |-----------------|-----------------|-----------------|
 
 ### Videos
 
-| [![Watch video 1: Demo Video](./demos/Enpal_online_polling_Screenrecorder.mp4)](https://drive.google.com/file/d/17zkwo6dgPVkaYr335AIXtbl-MeYYX-No/view?usp=drive_link) | [![Watch video 2: Demo Video](./demos/Enpal_offline_Screenrecorder.mp4)](https://drive.google.com/file/d/1hpAOUghNJHzyd0IuBiU8yonDpjIztM0N/view?usp=drive_link) |
+| [![Watch video 1: Demo Video](./Docs/Enpal_online_polling_Screenrecorder.mp4)](https://drive.google.com/file/d/17zkwo6dgPVkaYr335AIXtbl-MeYYX-No/view?usp=drive_link) | [![Watch video 2: Demo Video](./Docs/Enpal_offline_Screenrecorder.mp4)](https://drive.google.com/file/d/1hpAOUghNJHzyd0IuBiU8yonDpjIztM0N/view?usp=drive_link) |
 |-----------------|-----------------|

@@ -144,7 +144,7 @@ tasks.withType<DokkaTaskPartial>().configureEach { // Use DokkaTaskPartial for m
         // sourceRoots.from(files("src/main/kotlin"))
 
 
-        includes.from("IntegrationGuide.md")
+        includes.from("README.md")
         skipEmptyPackages.set(true)
         // includeNonPublic.set(false) // Uncomment if needed, default is false (only public/protected)
 
@@ -193,7 +193,7 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
         // sourceRoots.from(files("src/main/kotlin"))
 
 
-        includes.from("IntegrationGuide.md")
+        includes.from("README.md")
         skipEmptyPackages.set(true)
         // includeNonPublic.set(false) // Uncomment if needed, default is false (only public/protected)
 

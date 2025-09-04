@@ -278,5 +278,5 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 ### Videos
 
-| [![Watch video 1: Demo Video](./Docs/Enpal_online_polling_Screenrecorder.mp4)](https://drive.google.com/file/d/17zkwo6dgPVkaYr335AIXtbl-MeYYX-No/view?usp=drive_link) | [![Watch video 2: Demo Video](./Docs/Enpal_offline_Screenrecorder.mp4)](https://drive.google.com/file/d/1hpAOUghNJHzyd0IuBiU8yonDpjIztM0N/view?usp=drive_link) |
+| [![Watch video 1: Demo Video](https://www.youtube.com/shorts/OfhSMe3b7xg)](https://drive.google.com/file/d/17zkwo6dgPVkaYr335AIXtbl-MeYYX-No/view?usp=drive_link) | [![Watch video 2: Demo Video](./Docs/Enpal_offline_Screenrecorder.mp4)](https://drive.google.com/file/d/1hpAOUghNJHzyd0IuBiU8yonDpjIztM0N/view?usp=drive_link) |
 |-----------------|-----------------|

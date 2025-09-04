@@ -271,9 +271,9 @@ By doing this, the SDK will start and manage your `YourCustomBackgroundService` 
 
 - **Dashboard View**
 
-| ![Screenshot 1: Dashboard View](./Docs/Screenshot_20250904_153316.jpg) | ![Screenshot 2: Dashboard View](./Docs/Screenshot_20250904_153340.jpg) | ![Screenshot 3: Dashboard View](./Docs/Screenshot_20250904_153354.jpg) |
+| ![Screenshot 1: Dashboard View](./Docs/Screenshot_20250904_153316.png) | ![Screenshot 2: Dashboard View](./Docs/Screenshot_20250904_153340.png) | ![Screenshot 3: Dashboard View](./Docs/Screenshot_20250904_153354.png) |
 |-----------------|-----------------|-----------------|
-| ![Screenshot 4: Dashboard View](./Docs/Screenshot_20250904_153401.jpg) | ![Screenshot 5: Dashboard View](./Docs/Screenshot_20250904_153431.jpg) |                                 |
+| ![Screenshot 4: Dashboard View](./Docs/Screenshot_20250904_153401.png) | ![Screenshot 5: Dashboard View](./Docs/Screenshot_20250904_153431.png) |                                 |
 |-----------------|-----------------|-----------------|
 
 ### Videos
